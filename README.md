@@ -18,6 +18,25 @@ The NxtTrendz application allows users to:
 
 ---
 
+## 🔑 Demo Login Credentials
+
+Use the following credentials to log in and explore the application:
+
+### Prime User
+username: rahul
+password: rahul@2021
+
+
+### Non-Prime User
+username: raja
+password: raja@2021
+
+
+> ⚠️ These credentials are for demo purposes only.  
+> No real user data is stored.
+
+---
+
 ## 🚀 Features
 
 ### 🔐 Authentication
