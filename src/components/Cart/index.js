@@ -29,15 +29,15 @@ const Cart = () => {
         return (
           <>
             <Header />
-            <div className="cart-container">
+            <div className='cart-container'>
               {showEmptyView ? (
                 <EmptyCartView />
               ) : (
-                <div className="cart-content-container">
-                  <h1 className="cart-heading">My Cart</h1>
+                <div className='cart-content-container'>
+                  <h1 className='cart-heading'>My Cart</h1>
                   <button
-                    type="button"
-                    className="remove-all-btn"
+                    type='button'
+                    className='remove-all-btn'
                     onClick={onClickRemoveAll}
                   >
                     Remove All
@@ -54,13 +54,13 @@ const Cart = () => {
                   <h2>Payment Popup</h2>
                 </ReactModal> */}
                   {isOpen && (
-                    <div className="overlay">
-                      <div className="modal" role="dialog" aria-modal="true">
-                        <div className="modal-heading">
+                    <div className='overlay'>
+                      <div className='modal' role='dialog' aria-modal='true'>
+                        <div className='modal-heading'>
                           <h2>Payment</h2>
                           <button
-                            className="close-button"
-                            type="button"
+                            className='close-button'
+                            type='button'
                             onClick={() => {
                               setIsOpen(!isOpen)
                               setMethod('')
@@ -71,49 +71,49 @@ const Cart = () => {
                           </button>
                         </div>
                         <hr />
-                        <div className="modal-body">
-                          <form className="payment-options">
-                            <label className="payment-method disable">
+                        <div className='modal-body'>
+                          <form className='payment-options'>
+                            <label className='payment-method disable'>
                               <input
-                                type="radio"
-                                name="payment"
-                                value="card"
+                                type='radio'
+                                name='payment'
+                                value='card'
                                 disabled
                               />{' '}
                               Card
                             </label>
-                            <label className="payment-method disable">
+                            <label className='payment-method disable'>
                               <input
-                                type="radio"
-                                name="payment"
-                                value="netbanking"
+                                type='radio'
+                                name='payment'
+                                value='netbanking'
                                 disabled
                               />{' '}
                               Net Banking
                             </label>
-                            <label className="payment-method disable">
+                            <label className='payment-method disable'>
                               <input
-                                type="radio"
-                                name="payment"
-                                value="upi"
+                                type='radio'
+                                name='payment'
+                                value='upi'
                                 disabled
                               />{' '}
                               UPI
                             </label>
-                            <label className="payment-method disable">
+                            <label className='payment-method disable'>
                               <input
-                                type="radio"
-                                name="payment"
-                                value="wallet"
+                                type='radio'
+                                name='payment'
+                                value='wallet'
                                 disabled
                               />{' '}
                               Wallet
                             </label>
-                            <label className="payment-method">
+                            <label className='payment-method'>
                               <input
-                                type="radio"
-                                name="payment"
-                                value="cod"
+                                type='radio'
+                                name='payment'
+                                value='cod'
                                 checked={method === 'cod'}
                                 onChange={e => setMethod(e.target.value)}
                               />
@@ -121,8 +121,8 @@ const Cart = () => {
                             </label>
                           </form>
                           <hr />
-                          <div className="summary-container">
-                            <div className="summary">
+                          <div className='summary-container'>
+                            <div className='summary'>
                               <p>
                                 <b>Number of Items:</b> {cartList.length}
                               </p>
@@ -130,9 +130,9 @@ const Cart = () => {
                                 <b>Total Price:</b> {orderTotal}
                               </p>
                             </div>
-                            <div className="button-container">
+                            <div className='button-container'>
                               <button
-                                type="button"
+                                type='button'
                                 className={`confirm-button ${
                                   method === 'cod' ? 'green' : ''
                                 }`}
@@ -146,7 +146,7 @@ const Cart = () => {
                             </div>
                           </div>
                           {isConfirmOrder && (
-                            <p className="confirm-message">
+                            <p className='confirm-message'>
                               Your order has been placed successfully
                             </p>
                           )}
