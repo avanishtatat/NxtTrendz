@@ -15,6 +15,11 @@ import './App.css'
 class App extends Component {
   state = {
     cartList: [],
+    isOpen: false,
+  }
+
+  setIsOpen = () => {
+    this.setState(prevState => ({isOpen: !prevState.isOpen}))
   }
 
   //   TODO: Add your code for remove all cart items, increment cart item quantity, decrement cart item quantity, remove cart item
@@ -70,12 +75,14 @@ class App extends Component {
   }
 
   render() {
-    const {cartList} = this.state
+    const {cartList, isOpen} = this.state
 
     return (
       <CartContext.Provider
         value={{
           cartList,
+          isOpen,
+          setIsOpen: this.setIsOpen,
           addCartItem: this.addCartItem,
           removeCartItem: this.removeCartItem,
           incrementCartItemQuantity: this.incrementCartItemQuantity,

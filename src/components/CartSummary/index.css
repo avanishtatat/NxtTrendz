@@ -37,19 +37,20 @@
   align-self: stretch;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
 }
 
-@media screen and (min-width: 768px){
-  .cart-summary-total{
+@media screen and (min-width: 768px) {
+  .cart-summary-total {
     font-size: 22px;
     width: 30%;
   }
-  .checkout-btn{
+  .checkout-btn {
     width: 30%;
     height: 45px;
     align-self: flex-end;
   }
-  .cart-summary-item-count{
+  .cart-summary-item-count {
     width: 30%;
     font-size: 18px;
   }

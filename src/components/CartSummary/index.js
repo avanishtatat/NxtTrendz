@@ -1,11 +1,13 @@
 // Write your code here
+
 import CartContext from '../../context/CartContext'
 import './index.css'
 
 const CartSummary = () => (
   <CartContext.Consumer>
     {value => {
-      const {cartList} = value
+      const {cartList, setIsOpen} = value
+
       const orderTotal = cartList.reduce(
         (acc, sum) => acc + sum.price * sum.quantity,
         0,
@@ -20,7 +22,7 @@ const CartSummary = () => (
           <p className="cart-summary-item-count">
             {cartList.length} Items in cart
           </p>
-          <button type="button" className="checkout-btn">
+          <button type="button" className="checkout-btn" onClick={setIsOpen}>
             Checkout
           </button>
         </div>

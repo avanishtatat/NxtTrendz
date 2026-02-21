@@ -10,6 +10,7 @@ dependencies:
   react-dom: 17.0.1_react@17.0.1
   react-icons: 4.2.0_react@17.0.1
   react-loader-spinner: 4.0.0_react-dom@17.0.1+react@17.0.1
+  react-modal: 3.16.3_react-dom@17.0.1+react@17.0.1
   react-router-dom: 5.2.0_react@17.0.1
 devDependencies:
   eslint-config-airbnb: 18.2.1
@@ -7262,6 +7263,10 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-j5W0//W7f8UxAn8hXVnwG8tLwdiUy4FJLcSupCg6maBYZDpyBvTApK7KyuI4bKj8KOh1r2YH+6ucuYtJv1bTZA==
+  /exenv/1.2.2:
+    dev: false
+    resolution:
+      integrity: sha512-Z+ktTxTwv9ILfgKCk32OX3n/doe+OcLTRtqK9pcL+JsP3J1/VW8Uvl4ZjLlKqeW4rzK4oesDOGMEMRIZqtP4Iw==
   /exit/0.1.2:
     dev: true
     engines:
@@ -12508,6 +12513,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
+  /react-lifecycles-compat/3.0.4:
+    dev: false
+    resolution:
+      integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
   /react-loader-spinner/4.0.0_react-dom@17.0.1+react@17.0.1:
     dependencies:
       prop-types: 15.8.1
@@ -12519,6 +12528,20 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-RU2vpEej6G4ECei0h3q6bgLU10of9Lw5O+4AwF/mtkrX5oY20Sh/AxoPJ7etbrs/7Q3u4jN5qwCwGLRKCHpk6g==
+  /react-modal/3.16.3_react-dom@17.0.1+react@17.0.1:
+    dependencies:
+      exenv: 1.2.2
+      prop-types: 15.8.1
+      react: 17.0.1
+      react-dom: 17.0.1_react@17.0.1
+      react-lifecycles-compat: 3.0.4
+      warning: 4.0.3
+    dev: false
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
+      react-dom: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
+    resolution:
+      integrity: sha512-yCYRJB5YkeQDQlTt17WGAgFJ7jr2QYcWa1SHqZ3PluDmnKJ/7+tVU+E6uKyZ0nODaeEj+xCpK4LcSnKXLMC0Nw==
   /react-refresh/0.8.3:
     dev: true
     engines:
@@ -14915,6 +14938,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==
+  /warning/4.0.3:
+    dependencies:
+      loose-envify: 1.4.0
+    dev: false
+    resolution:
+      integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==
   /watchpack-chokidar2/2.0.1:
     dependencies:
       chokidar: 2.1.8
@@ -15578,5 +15607,6 @@ specifiers:
   react-dom: 17.0.1
   react-icons: 4.2.0
   react-loader-spinner: 4.0.0
+  react-modal: 3.16.3
   react-router-dom: 5.2.0
   react-scripts: 4.0.3
