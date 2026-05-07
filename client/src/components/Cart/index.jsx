@@ -44,8 +44,8 @@ const Cart = () => {
                   </button>
                   <CartListView />
                   <CartSummary />
-                  // React modal implementation is commented out for now, will
-                  be implemented in future
+                  {/* React modal implementation is commented out for now, will
+                  be implemented in future */}
                   {/* <ReactModal
                   isOpen={isOpen}
                   onRequestClose={setIsOpen}
