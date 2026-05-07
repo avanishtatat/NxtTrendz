@@ -1,5 +1,5 @@
 import {Component} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useParams} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import {BsPlusSquare, BsDashSquare} from 'react-icons/bs'
@@ -228,4 +228,9 @@ class ProductItemDetails extends Component {
   }
 }
 
-export default ProductItemDetails
+const ProductItemDetailsWrapper = () => {
+  const params = useParams()
+  return <ProductItemDetails match={{ params }} />
+}
+
+export default ProductItemDetailsWrapper
