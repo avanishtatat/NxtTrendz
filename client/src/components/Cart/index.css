@@ -75,6 +75,8 @@
 }
 
 .button-container {
+  display: flex;
+  justify-content: center;
   align-items: flex-end;
 }
 
@@ -137,8 +139,6 @@
     font-size: 48px;
   }
 }
-
-/* Write your CSS here */
 
 .remove-all-btn {
   color: #0b69ff;

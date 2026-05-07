@@ -37,11 +37,12 @@ class PrimeDealsSection extends Component {
       },
       method: 'GET',
     }
-    const response = await fetch(apiUrl, options)
-    if (response.ok === true) {
-      const fetchedData = await response.json()
-      const updatedData = fetchedData.prime_deals.map(product => ({
-        title: product.title,
+    try {
+      const response = await fetch(apiUrl, options)
+      if (response.ok === true) {
+        const fetchedData = await response.json()
+        const updatedData = fetchedData.prime_deals.map(product => ({
+          title: product.title,
         brand: product.brand,
         price: product.price,
         id: product.id,
@@ -52,8 +53,12 @@ class PrimeDealsSection extends Component {
         primeDeals: updatedData,
         apiStatus: apiStatusConstants.success,
       })
+    } else {
+      this.setState({
+        apiStatus: apiStatusConstants.failure,
+      })
     }
-    if (response.status === 401) {
+  } catch (_err) {
       this.setState({
         apiStatus: apiStatusConstants.failure,
       })

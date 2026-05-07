@@ -1,4 +1,4 @@
-// Write your code here
+
 
 import CartContext from '../../context/CartContext'
 import './index.css'
@@ -20,7 +20,7 @@ const CartSummary = () => (
             <span className="order-total-amount">Rs {orderTotal}/-</span>
           </h1>
           <p className="cart-summary-item-count">
-            {cartList.length} Items in cart
+            {cartList.length} {cartList.length === 1 ? 'Item': 'Items'} in cart
           </p>
           <button type="button" className="checkout-btn" onClick={setIsOpen}>
             Checkout

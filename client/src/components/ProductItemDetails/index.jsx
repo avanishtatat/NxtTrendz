@@ -1,7 +1,7 @@
 import {Component} from 'react'
 import {Link, useParams} from 'react-router-dom'
 import Cookies from 'js-cookie'
-import Loader from 'react-loader-spinner'
+import { ThreeDots } from 'react-loader-spinner'
 import {BsPlusSquare, BsDashSquare} from 'react-icons/bs'
 
 import CartContext from '../../context/CartContext'
@@ -58,20 +58,25 @@ class ProductItemDetails extends Component {
       },
       method: 'GET',
     }
-    const response = await fetch(apiUrl, options)
-    if (response.ok) {
-      const fetchedData = await response.json()
-      const updatedData = this.getFormattedData(fetchedData)
-      const updatedSimilarProductsData = fetchedData.similar_products.map(
-        eachSimilarProduct => this.getFormattedData(eachSimilarProduct),
-      )
-      this.setState({
-        productData: updatedData,
-        similarProductsData: updatedSimilarProductsData,
-        apiStatus: apiStatusConstants.success,
-      })
-    }
-    if (response.status === 404) {
+    try {
+      const response = await fetch(apiUrl, options)
+      if (response.ok) {
+        const fetchedData = await response.json()
+        const updatedData = this.getFormattedData(fetchedData)
+        const updatedSimilarProductsData = fetchedData.similar_products.map(
+          eachSimilarProduct => this.getFormattedData(eachSimilarProduct),
+        )
+        this.setState({
+          productData: updatedData,
+          similarProductsData: updatedSimilarProductsData,
+          apiStatus: apiStatusConstants.success,
+        })
+      } else {
+        this.setState({
+          apiStatus: apiStatusConstants.failure,
+        })
+      }
+    } catch (error) {
       this.setState({
         apiStatus: apiStatusConstants.failure,
       })
@@ -80,7 +85,7 @@ class ProductItemDetails extends Component {
 
   renderLoadingView = () => (
     <div className="products-details-loader-container" data-testid="loader">
-      <Loader type="ThreeDots" color="#0b69ff" height="50" width="50" />
+      <ThreeDots color="#0b69ff" height="50" width="50" />
     </div>
   )
 
@@ -92,10 +97,8 @@ class ProductItemDetails extends Component {
         className="error-view-image"
       />
       <h1 className="product-not-found-heading">Product Not Found</h1>
-      <Link to="/products">
-        <button type="button" className="button">
-          Continue Shopping
-        </button>
+      <Link to="/products" className="button">
+        Continue Shopping
       </Link>
     </div>
   )
@@ -230,7 +233,7 @@ class ProductItemDetails extends Component {
 
 const ProductItemDetailsWrapper = () => {
   const params = useParams()
-  return <ProductItemDetails match={{ params }} />
+  return <ProductItemDetails match={{params}} />
 }
 
 export default ProductItemDetailsWrapper

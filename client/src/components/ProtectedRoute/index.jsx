@@ -4,7 +4,7 @@ import Cookie from 'js-cookie'
 const ProtectedRoute = () => {
   const token = Cookie.get('jwt_token')
 
-  return token ? <Outlet /> : <Navigate to="/login" />
+  return token ? <Outlet /> : <Navigate to="/login" replace />
 }
 
 export default ProtectedRoute

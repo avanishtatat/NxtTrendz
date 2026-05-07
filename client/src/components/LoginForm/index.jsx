@@ -26,9 +26,9 @@ const LoginForm = () => {
     navigate('/')
   }
 
-  const onSubmitFailure = errorMsg => {
+  const onSubmitFailure = errMsg => {
     setShowSubmitError(true)
-    setErrorMsg(errorMsg)
+    setErrorMsg(errMsg)
   }
 
   const submitForm = async event => {
@@ -37,14 +37,21 @@ const LoginForm = () => {
     const url = 'https://apis.ccbp.in/login'
     const options = {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(userDetails),
     }
-    const response = await fetch(url, options)
-    const data = await response.json()
-    if (response.ok === true) {
-      onSubmitSuccess(data.jwt_token)
-    } else {
-      onSubmitFailure(data.error_msg)
+    try {
+      const response = await fetch(url, options)
+      const data = await response.json()
+      if (response.ok === true) {
+        onSubmitSuccess(data.jwt_token)
+      } else {
+        onSubmitFailure(data.error_msg)
+      }
+    } catch (error) {
+      onSubmitFailure('Something went wrong. Please try again.')
     }
   }
 

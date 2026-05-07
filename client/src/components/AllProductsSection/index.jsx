@@ -104,22 +104,28 @@ class AllProductsSection extends Component {
       },
       method: 'GET',
     }
-    const response = await fetch(apiUrl, options)
-    if (response.ok) {
-      const fetchedData = await response.json()
-      const updatedData = fetchedData.products.map(product => ({
-        title: product.title,
-        brand: product.brand,
-        price: product.price,
-        id: product.id,
-        imageUrl: product.image_url,
-        rating: product.rating,
-      }))
-      this.setState({
-        productsList: updatedData,
-        apiStatus: apiStatusConstants.success,
-      })
-    } else {
+    try {
+      const response = await fetch(apiUrl, options)
+      if (response.ok) {
+        const fetchedData = await response.json()
+        const updatedData = fetchedData.products.map(product => ({
+          title: product.title,
+          brand: product.brand,
+          price: product.price,
+          id: product.id,
+          imageUrl: product.image_url,
+          rating: product.rating,
+        }))
+        this.setState({
+          productsList: updatedData,
+          apiStatus: apiStatusConstants.success,
+        })
+      } else {
+        this.setState({
+          apiStatus: apiStatusConstants.failure,
+        })
+      }
+    } catch (error) {
       this.setState({
         apiStatus: apiStatusConstants.failure,
       })
