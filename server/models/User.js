@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        primeExpireAt: {
+        primeExpiresAt: {
             type: Date,
             default: null,
         },
