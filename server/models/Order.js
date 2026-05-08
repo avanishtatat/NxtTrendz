@@ -102,7 +102,6 @@ orderSchema.pre("save", function (next) {
             (total, item) => total + item.price * item.quantity,
             0,
         );
-        return next();
         const calculatedTotal = this.items.reduce(
             (total, item) => total + item.price * item.quantity,
             0,
