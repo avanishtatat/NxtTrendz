@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import { pathToFileURL } from "url";
-import connectDB from "./config/db";
+import connectDB from "./config/db.js";
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
