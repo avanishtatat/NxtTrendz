@@ -61,6 +61,23 @@ cartSchema.pre("save", function (next) {
     next();
 });
 
+// Also validate on updates 
+cartSchema.pre(["findOneAndUpdate", "updateOne"], function (next) {
+    const update = this.getUpdate();
+    const items = update.$set?.items || update.items; 
+
+    if (items && Array.isArray(items)) {
+        const productIds = new Set(); 
+        for (const item of items) {
+            if (productIds.has(item.productId)) {
+                return next(new Error("Duplicate productId found in cart items. Each productId must be unique within the cart."));
+            }
+            productIds.add(item.productId);
+        }
+    }
+    next();
+});
+
 const Cart = mongoose.model("Cart", cartSchema);
 
 export default Cart;
