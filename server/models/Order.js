@@ -6,6 +6,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true, // Add index for faster queries by userId
     },
     items: [
       {
@@ -40,7 +41,6 @@ const orderSchema = new mongoose.Schema(
         },
         rating: {
           type: Number,
-          required: false,
           min: 0,
           max: 5,
         },
@@ -78,6 +78,31 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// Pre-save hook to ensure that orders cannot be marked as shipped or delivered if payment is not completed
+orderSchema.pre("save", function (next) {
+    if (["shipped", "delivered"].includes(this.status) && this.payment.status !== "paid") {
+        return next(new Error(`Cannot update order status to ${this.status} when payment status is ${this.payment.status}. Please ensure payment is completed before updating order status.`));
+    }
+    next();
+})
+
+// Pre-save hook to validate that totalAmount matches the sum of items
+orderSchema.pre("save", function (next) {
+    const calculatedTotal = this.items.reduce((total, item) => total + item.price * item.quantity, 0);
+
+    // Allow small floating-point discrepancies by using a tolerance value
+    const tolerance = 0.01;
+    if (Math.abs(calculatedTotal - this.totalAmount) > tolerance) {
+        return next(new Error(`Total amount ${this.totalAmount} does not match the sum of items $${calculatedTotal.toFixed(2)}. Please ensure the total amount is correct.`));
+    }
+    next();
+})
+
+// Validate that the order contains at least one item
+orderSchema.path("items").validate(function (items) {
+    return items && items.length > 0;
+}, "Order must contain at least one item.");
 
 const Order = mongoose.model("Order", orderSchema);
 
