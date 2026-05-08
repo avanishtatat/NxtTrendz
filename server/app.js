@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import { pathToFileURL } from "url";
 import connectDB from "./config/db";
 dotenv.config(); // Load environment variables from .env file
 
@@ -20,13 +21,15 @@ app.use(express.json()); // Parse JSON bodies
 // Health check endpoint
 app.get("/health", (req, res) => {
   const dbStatus =
-    mongoose.connection.readyState === 1 ? "connected" : "disconnected";
+    { 0: "disconnected", 1: "connected", 2: "connecting", 3: "disconnecting" }[
+      mongoose.connection.readyState
+    ] || "unknown";
   res.status(200).json({ status: "healthy", database: dbStatus });
 });
 
 // Start the server
 const PORT = process.env.PORT || 5000;
-(async function () {
+const startServer = async () => {
   try {
     await connectDB(); // Connect to MongoDB
     app.listen(PORT, () => {
@@ -36,11 +39,19 @@ const PORT = process.env.PORT || 5000;
     console.error("Error starting the server:", error);
     process.exit(1); // Exit with failure code
   }
-})();
+};
 
-// Graceful shutdown
-process.on("SIGTERM", async () => {
-  console.log("SIGTERM received, shutting down gracefully...");
+const isDirectRun = process.argv[1]
+  ? import.meta.url === pathToFileURL(process.argv[1]).href
+  : false;
+
+if (isDirectRun) {
+  startServer();
+}
+
+// Graceful shutdown handlers
+const gracefulShutdown = async (signal) => {
+  console.log(`${signal} received, shutting down gracefully...`);
   try {
     await mongoose.connection.close(); // Close MongoDB connection
     console.log("MongoDB connection closed");
@@ -49,16 +60,14 @@ process.on("SIGTERM", async () => {
     console.error("Error during shutdown:", error);
     process.exit(1); // Exit with failure code
   }
+};
+
+process.on("SIGTERM", async () => {
+  await gracefulShutdown("SIGTERM");
 });
 
 process.on("SIGINT", async () => {
-  console.log("SIGINT received, shutting down gracefully...");
-  try {
-    await mongoose.connection.close(); // Close MongoDB connection
-    console.log("MongoDB connection closed");
-    process.exit(0); // Exit with success code
-  } catch (error) {
-    console.error("Error during shutdown:", error);
-    process.exit(1); // Exit with failure code
-  }
+  await gracefulShutdown("SIGINT");
 });
+
+export default app;

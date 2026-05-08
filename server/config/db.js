@@ -9,6 +9,10 @@ const connectDB = async () => {
     console.log("MongoDB connection is already in progress");
     return;
   }
+  if (mongoose.connection.readyState === 3) {
+    console.log("MongoDB connection is currently disconnecting");
+    return;
+  }
   const mongoURI = process.env.MONGODB_URI;
   if (!mongoURI) {
     console.error("MongoDB URI is not defined in environment variables");
