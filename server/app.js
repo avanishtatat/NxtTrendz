@@ -41,15 +41,6 @@ const startServer = async () => {
   }
 };
 
-const isDirectRun = process.argv[1]
-  ? import.meta.url === pathToFileURL(process.argv[1]).href
-  : false;
-
-if (isDirectRun) {
-  startServer();
-}
-
-// Graceful shutdown handlers
 const gracefulShutdown = async (signal) => {
   console.log(`${signal} received, shutting down gracefully...`);
   try {
@@ -62,12 +53,22 @@ const gracefulShutdown = async (signal) => {
   }
 };
 
-process.on("SIGTERM", async () => {
-  await gracefulShutdown("SIGTERM");
-});
+const isDirectRun = process.argv[1]
+  ? import.meta.url === pathToFileURL(process.argv[1]).href
+  : false;
 
-process.on("SIGINT", async () => {
-  await gracefulShutdown("SIGINT");
-});
+if (isDirectRun) {
+  startServer();
+  // Graceful shutdown handlers
+  process.on("SIGTERM", async () => {
+    await gracefulShutdown("SIGTERM");
+  });
+
+  process.on("SIGINT", async () => {
+    await gracefulShutdown("SIGINT");
+  });
+}
+
+
 
 export default app;
