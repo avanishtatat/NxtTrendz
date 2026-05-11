@@ -21,9 +21,7 @@ export const getNxtWaveToken = async (isPrime) => {
         password: process.env.NXTWAVE_FREE_PASSWORD,
       };
   try {
-    const response = await axios.get("https://apis.ccbp.in/login", {
-      auth: credentials,
-    });
+    const response = await axios.post("https://apis.ccbp.in/login", credentials);
     if (response.status === 200 && response.data?.jwt_token) {
       return {success: true, token: response.data?.jwt_token};
     } else {
