@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const getNxtWaveToken = async (isPrime) => {
   if (
     !process.env.NXTWAVE_PRIME_USERNAME ||
@@ -22,9 +24,10 @@ export const getNxtWaveToken = async (isPrime) => {
     const response = await axios.get("https://apis.ccbp.in/login", {
       auth: credentials,
     });
-    if (response.ok) {
-      return response.data?.jwt_token;
+    if (response.status === 200 && response.data?.jwt_token) {
+      return {success: true, token:response.data?.jwt_token};
     } else {
+        console.error("Unexpected response from NxtWave API:", response.data);
       return {
         success: false,
         error: "Failed to authenticate with NxtWave API.",
