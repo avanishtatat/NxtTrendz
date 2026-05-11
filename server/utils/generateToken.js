@@ -21,9 +21,5 @@ export const generateToken = (user) => {
     // Sign the token with a secret key and set an expiration time
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" }); // Token expires in 7 days
 
-    if (!token) {
-        throw new Error("Failed to generate token.");
-    }
-
     return token;
 }
