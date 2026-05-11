@@ -25,9 +25,9 @@ export const getNxtWaveToken = async (isPrime) => {
       auth: credentials,
     });
     if (response.status === 200 && response.data?.jwt_token) {
-      return {success: true, token:response.data?.jwt_token};
+      return {success: true, token: response.data?.jwt_token};
     } else {
-        console.error("Unexpected response from NxtWave API:", response.data);
+        console.error("Unexpected response from NxtWave API. Status:", response.status);
       return {
         success: false,
         error: "Failed to authenticate with NxtWave API.",
