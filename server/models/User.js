@@ -27,9 +27,7 @@ const userSchema = new mongoose.Schema(
         },
         primeExpiresAt: {
             type: Date,
-            default: function() {
-                return this.isPrime ? new Date(this.createdAt.getTime() + 30 * 24 * 60 * 60 * 1000) : null;
-            }, // Default to 30 days from account creation if isPrime is true
+            default: null, // No expiration date by default
         },
     },
     { timestamps: true }
