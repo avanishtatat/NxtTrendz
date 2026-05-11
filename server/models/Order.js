@@ -48,8 +48,8 @@ const orderSchema = new mongoose.Schema(
     ],
     totalAmount: {
       type: Number,
-      required: true,
       min: 0,
+      default: 0,
     },
     status: {
       type: String,
@@ -94,7 +94,7 @@ orderSchema.pre("save", function (next) {
   next();
 });
 
-// Pre-save hook to validate that totalAmount matches the sum of items
+// Automatically calculate totalAmount before saving a new order
 orderSchema.pre("save", function (next) {
     if (this.isNew) {
         // For new orders, calculate totalAmount from items
@@ -102,21 +102,7 @@ orderSchema.pre("save", function (next) {
             (total, item) => total + item.price * item.quantity,
             0,
         );
-        const calculatedTotal = this.items.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0,
-        );
-        
-        // Allow small floating-point discrepancies by using a tolerance value
-        const tolerance = 0.01;
-        if (Math.abs(calculatedTotal - this.totalAmount) > tolerance) {
-            return next(
-                new Error(
-                    `Total amount ${this.totalAmount.toFixed(2)} does not match the sum of items $${calculatedTotal.toFixed(2)}. Please ensure the total amount is correct.`,
-                ),
-            );
-        }
-    }
+    }   
     next();
 });
 
