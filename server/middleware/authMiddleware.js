@@ -1,5 +1,10 @@
 import jwt from "jsonwebtoken";
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  console.error("JWT_SECRET environment variable is not defined.");
+}
+
 export const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -7,12 +12,6 @@ export const authMiddleware = (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-
-  const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret) {
-    console.error("JWT_SECRET environment variable is not defined.");
-    return res.status(500).json({ error: "Internal server error" });
-  }
 
   try {
     const decoded = jwt.verify(token, jwtSecret);
