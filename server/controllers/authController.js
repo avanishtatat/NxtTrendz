@@ -1,6 +1,10 @@
+import bcrypt from "bcryptjs";
 import User from "../models/User";
 import { checkPrimeStatus } from "../utils/checkPrimeStatus";
 import { generateToken } from "../utils/generateToken";
+
+// Pre-computed dummy hash for timing-safe comparison when user not found
+const DUMMY_HASH = "$2a$10$CwTycUXWue0Thq9StjUM0uJ8z5rZ3G9b8jE1u7hYy6K/1sB2S"; // bcrypt hash for "dummyPassword"
 
 export const register = async (req, res) => {
     const { name, email, password } = req.body; 
@@ -40,8 +44,7 @@ export const login = async (req, res) => {
             isMatch = await user.comparePassword(password); 
         } else {
             // Perform dummy comparison to prevent timing attacks even when user is not found
-            const bcrypt = await import("bcryptjs");
-            await bcrypt.compare(password, "$2a$10$dummyHashToPreventTimingAttack12345678901234567890"); // Compare with a dummy hash
+            await bcrypt.compare(password, DUMMY_HASH);
         }
         
         if (!user || !isMatch) {
