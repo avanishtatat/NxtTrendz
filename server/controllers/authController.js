@@ -14,10 +14,10 @@ export const register = async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  if (password.length < 8 || password.length > 128) {
+  if (password.length < 8 || password.length > 52) {
     return res
       .status(400)
-      .json({ error: "Password must be between 8 and 128 characters long." });
+      .json({ error: "Password must be between 8 and 52 characters long." });
   }
 
   try {
