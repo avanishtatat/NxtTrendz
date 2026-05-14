@@ -4,7 +4,8 @@ import { checkPrimeStatus } from "../utils/checkPrimeStatus";
 import { generateToken } from "../utils/generateToken";
 
 // Pre-computed dummy hash for timing-safe comparison when user not found
-const DUMMY_HASH = "$2a$10$CwTycUXWue0Thq9StjUM0uJ8z5rZ3G9b8jE1u7hYy6K/1sB2S"; // bcrypt hash for "dummyPassword"
+// Generated via: bcrypt.hashSync("dummyPassword", 10)  
+const DUMMY_HASH =  bcrypt.hashSync("dummyPassword", 10); // bcrypt hash for "dummyPassword"
 
 export const register = async (req, res) => {
     const { name, email, password } = req.body; 
