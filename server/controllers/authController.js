@@ -14,10 +14,10 @@ export const register = async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  if (password.length < 8) {
+  if (password.length < 8 || password.length > 128) {
     return res
       .status(400)
-      .json({ error: "Password must be at least 8 characters long." });
+      .json({ error: "Password must be between 8 and 128 characters long." });
   }
 
   try {
@@ -47,7 +47,7 @@ export const register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error during user registration:", error.message);
+    console.error("Error during user registration:", process.env.NODE_ENV === "production" ?  error.message : error );
     res.status(500).json({ error: "Internal server error." });
   }
 };
@@ -85,7 +85,7 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error during user login:", error.message);
+    console.error("Error during user login:", process.env.NODE_ENV === "production" ?  error.message : error );
     res.status(500).json({ error: "Internal server error." });
   }
 };
@@ -112,7 +112,7 @@ export const getProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching user profile:", error.message);
+    console.error("Error fetching user profile:", process.env.NODE_ENV === "production" ?  error.message : error );
     res.status(500).json({ error: "Internal server error." });
   }
 };
