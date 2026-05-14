@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
-  console.error("JWT_SECRET environment variable is not defined.");
+  throw new Error("JWT_SECRET environment variable is not defined. Server cannot start without it.");
 }
 
 export const authMiddleware = (req, res, next) => {
