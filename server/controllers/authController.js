@@ -4,14 +4,20 @@ import { checkPrimeStatus } from "../utils/checkPrimeStatus.js";
 import { generateToken } from "../utils/generateToken.js";
 
 // Pre-computed dummy hash for timing-safe comparison when user not found
-// Generated via: bcrypt.hashSync("dummyPassword", 10)
-const DUMMY_HASH = bcrypt.hashSync("dummyPassword", 10); // bcrypt hash for "dummyPassword"
+const DUMMY_HASH =
+  "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"; // Pre-computed hash for "dummyPassword" with 10 salt rounds
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: "All fields are required." });
+  }
+
+  if (password.length < 8) {
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 8 characters long." });
   }
 
   try {
@@ -29,21 +35,19 @@ export const register = async (req, res) => {
     });
     await user.save();
     const token = generateToken(user); // Generate JWT token for the newly registered user
-    res
-      .status(201)
-      .json({
-        message: "User registered successfully.",
-        token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          isPrime: user.isPrime,
-          primeExpiresAt: user.primeExpiresAt,
-        },
-      });
+    res.status(201).json({
+      message: "User registered successfully.",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isPrime: user.isPrime,
+        primeExpiresAt: user.primeExpiresAt,
+      },
+    });
   } catch (error) {
-    console.error("Error during user registration:", error);
+    console.error("Error during user registration:", error.message);
     res.status(500).json({ error: "Internal server error." });
   }
 };
@@ -81,7 +85,7 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error during user login:", error);
+    console.error("Error during user login:", error.message);
     res.status(500).json({ error: "Internal server error." });
   }
 };
@@ -108,7 +112,7 @@ export const getProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    console.error("Error fetching user profile:", error.message);
     res.status(500).json({ error: "Internal server error." });
   }
 };
