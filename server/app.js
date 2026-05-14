@@ -6,6 +6,8 @@ import { pathToFileURL } from "url";
 import connectDB from "./config/db.js";
 dotenv.config(); // Load environment variables from .env file
 
+import authRoutes from "./routes/auth.js";
+
 const app = express();
 
 // Middleware
@@ -26,6 +28,9 @@ app.get("/health", (req, res) => {
     ] || "unknown";
   res.status(200).json({ status: "healthy", database: dbStatus });
 });
+
+// Routes 
+app.use("/api/v1/auth", authRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
