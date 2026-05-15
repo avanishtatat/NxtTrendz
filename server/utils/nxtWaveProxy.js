@@ -1,16 +1,33 @@
 import axios from "axios";
 
-export const getNxtWaveToken = async (isPrime) => {
-  if (
-    !process.env.NXTWAVE_PRIME_USERNAME ||
-    !process.env.NXTWAVE_PRIME_PASSWORD ||
-    !process.env.NXTWAVE_FREE_USERNAME ||
-    !process.env.NXTWAVE_FREE_PASSWORD
-  ) {
+const tokenCache = {
+  prime: { token: null, expiresAt: null },
+  free: { token: null, expiresAt: null },
+};
+
+const REQUIRED_ENV = [
+  "NXTWAVE_PRIME_USERNAME",
+  "NXTWAVE_PRIME_PASSWORD",
+  "NXTWAVE_FREE_USERNAME",
+  "NXTWAVE_FREE_PASSWORD",
+];
+
+REQUIRED_ENV.forEach((envVar) => {
+  if (!process.env[envVar]) {
     throw new Error(
-      "NxtWave API credentials are not fully defined in environment variables.",
+      `Environment variable ${envVar} is not defined. Server cannot start without it.`,
     );
   }
+});
+
+export const getNxtWaveToken = async (isPrime) => {
+  const cacheKey = isPrime ? "prime" : "free";
+  const cached = tokenCache[cacheKey];
+  const now = new Date();
+  if (cached.token && cached.expiresAt && cached.expiresAt > now) {
+    return { success: true, token: cached.token };
+  }
+
   const credentials = isPrime
     ? {
         username: process.env.NXTWAVE_PRIME_USERNAME,
@@ -21,11 +38,22 @@ export const getNxtWaveToken = async (isPrime) => {
         password: process.env.NXTWAVE_FREE_PASSWORD,
       };
   try {
-    const response = await axios.post("https://apis.ccbp.in/login", credentials);
+    const response = await axios.post(
+      "https://apis.ccbp.in/login",
+      credentials,
+    );
     if (response.status === 200 && response.data?.jwt_token) {
-      return {success: true, token: response.data?.jwt_token};
+      const newToken = response.data?.jwt_token;
+      tokenCache[cacheKey] = {
+        token: newToken,
+        expiresAt: new Date(now.getTime() + 55 * 60 * 1000), // Cache for 55 minutes to be safe (tokens expire in 1 hour)
+      };
+      return { success: true, token: response.data?.jwt_token };
     } else {
-        console.error("Unexpected response from NxtWave API. Status:", response.status);
+      console.error(
+        "Unexpected response from NxtWave API. Status:",
+        response.status,
+      );
       return {
         success: false,
         error: "Failed to authenticate with NxtWave API.",
