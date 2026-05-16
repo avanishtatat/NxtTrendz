@@ -58,7 +58,7 @@ export const getPrimeProducts = async (req, res) => {
             return res.json({ primeDeals: response.data.prime_deals });
         } 
         if (response.status === 403) {
-            return res.status(403).json({ error: "Access denied to prime deals. Please ensure your account has the necessary permissions." });
+            return res.status(403).json({ error: "Access denied to prime deals by upstream service." });
         }
         if (response.status === 404) {
             return res.status(404).json({ error: "Prime deals not found." });
