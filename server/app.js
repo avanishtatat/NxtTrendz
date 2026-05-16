@@ -7,6 +7,7 @@ import { pathToFileURL } from "url";
 import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/auth.js";
+import productRoutes from "./routes/products.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get("/health", (req, res) => {
 
 // Routes 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/products", productRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
