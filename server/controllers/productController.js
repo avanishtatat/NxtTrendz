@@ -5,7 +5,6 @@ import { getNxtWaveToken } from "../utils/nxtWaveProxy.js";
 
 
 export const getProducts = async (req, res) => {
-    const { sort_by, category="", title_search="", rating="" } = req.query;
     const { prime } = req.user; // Get isPrime from the authenticated user
     try {
         const nxtWaveToken = await getNxtWaveToken(prime);
@@ -16,18 +15,17 @@ export const getProducts = async (req, res) => {
             headers: {
                 Authorization: `Bearer ${nxtWaveToken.token}`,
             },
-            params: {
-                sort_by,
-                category,
-                title_search,
-                rating,
-            },
+            params: req.query, // Forward any query parameters for filtering/pagination to the upstream API
+            validateStatus: (status) => status >= 200 && status < 500, // Accept all responses to handle them gracefully
         });
         if (response.status === 200) {
             return res.json({ products: response.data.products });
         } 
         return res.status(502).json({ error: "Unexpected response from upstream service." });
     } catch (error) {
+        if (error.response?.status === 404) {
+            return res.status(404).json({ error: "Products not found." });
+        }
         console.error("Error fetching products:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching products." });
     }
@@ -54,6 +52,7 @@ export const getPrimeProducts = async (req, res) => {
                 Authorization: `Bearer ${nxtWaveToken.token}`,
                 'Accept': 'application/json',
             },
+            validateStatus: (status) => status < 500
         });
         if (response.status === 200) {
             return res.json({ primeDeals: response.data.prime_deals });
@@ -77,14 +76,16 @@ export const getProductById = async (req, res) => {
             headers: {
                 Authorization: `Bearer ${nxtWaveToken.token}`,
             },
+            validateStatus: (status) => status < 500
         });
         if (response.status === 200) {
             return res.json({ product: response.data });
-        } else if (response.status === 404) {
-            return res.status(404).json({ error: "Product not found." });
         } 
         return res.status(502).json({ error: "Unexpected response from upstream service." });
     } catch (error) {
+        if (error.response?.status === 404) {
+            return res.status(404).json({ error: "Product not found." });
+        }
         console.error("Error fetching product:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching the product." });
     }
