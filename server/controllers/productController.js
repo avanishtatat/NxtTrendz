@@ -26,6 +26,7 @@ export const getProducts = async (req, res) => {
         if (response.status === 200) {
             return res.json({ products: response.data.products });
         } 
+        return res.status(502).json({ error: "Unexpected response from upstream service." });
     } catch (error) {
         console.error("Error fetching products:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching products." });
@@ -57,6 +58,7 @@ export const getPrimeProducts = async (req, res) => {
         if (response.status === 200) {
             return res.json({ primeDeals: response.data.prime_deals });
         } 
+        return res.status(502).json({ error: "Unexpected response from upstream service." });
     } catch (error) {
         console.error("Error fetching prime deals:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching prime deals." });
@@ -81,6 +83,7 @@ export const getProductById = async (req, res) => {
         } else if (response.status === 404) {
             return res.status(404).json({ error: "Product not found." });
         } 
+        return res.status(502).json({ error: "Unexpected response from upstream service." });
     } catch (error) {
         console.error("Error fetching product:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching the product." });
