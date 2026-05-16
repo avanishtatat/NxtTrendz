@@ -25,9 +25,7 @@ export const getProducts = async (req, res) => {
         });
         if (response.status === 200) {
             return res.json({ products: response.data.products });
-        } else {
-            return res.status(502).json({ error: "Failed to fetch products from upstream service." });
-        }
+        } 
     } catch (error) {
         console.error("Error fetching products:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching products." });
@@ -38,6 +36,9 @@ export const getPrimeProducts = async (req, res) => {
     const { id } = req.user;
     try {
         const user = await User.findById(id); 
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
         const {user: updatedUser} = await checkPrimeStatus(user); // Check and update prime status if needed
         // console.log(`User ${updatedUser.email} prime status is ${updatedUser.isPrime}.`);
         if (!updatedUser.isPrime) {
@@ -55,9 +56,7 @@ export const getPrimeProducts = async (req, res) => {
         });
         if (response.status === 200) {
             return res.json({ primeDeals: response.data.prime_deals });
-        } else {
-            return res.status(502).json({ error: "Failed to fetch prime deals from upstream service." });
-        }
+        } 
     } catch (error) {
         console.error("Error fetching prime deals:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching prime deals." });
@@ -81,9 +80,7 @@ export const getProductById = async (req, res) => {
             return res.json({ product: response.data });
         } else if (response.status === 404) {
             return res.status(404).json({ error: "Product not found." });
-        } else {
-            return res.status(502).json({ error: "Failed to fetch product from upstream service." });
-        }
+        } 
     } catch (error) {
         console.error("Error fetching product:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching the product." });
