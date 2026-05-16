@@ -21,11 +21,11 @@ export const getProducts = async (req, res) => {
         if (response.status === 200) {
             return res.json({ products: response.data.products });
         } 
-        return res.status(502).json({ error: "Unexpected response from upstream service." });
-    } catch (error) {
-        if (error.response?.status === 404) {
+        if (response.status === 404) {
             return res.status(404).json({ error: "Products not found." });
         }
+        return res.status(502).json({ error: "Unexpected response from upstream service." });
+    } catch (error) {
         console.error("Error fetching products:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching products." });
     }
@@ -57,6 +57,12 @@ export const getPrimeProducts = async (req, res) => {
         if (response.status === 200) {
             return res.json({ primeDeals: response.data.prime_deals });
         } 
+        if (response.status === 403) {
+            return res.status(403).json({ error: "Access denied to prime deals. Please ensure your account has the necessary permissions." });
+        }
+        if (response.status === 404) {
+            return res.status(404).json({ error: "Prime deals not found." });
+        }
         return res.status(502).json({ error: "Unexpected response from upstream service." });
     } catch (error) {
         console.error("Error fetching prime deals:", error?.response?.data?.error_msg || error.message);
@@ -81,11 +87,11 @@ export const getProductById = async (req, res) => {
         if (response.status === 200) {
             return res.json({ product: response.data });
         } 
-        return res.status(502).json({ error: "Unexpected response from upstream service." });
-    } catch (error) {
-        if (error.response?.status === 404) {
+        if (response.status === 404) {
             return res.status(404).json({ error: "Product not found." });
         }
+        return res.status(502).json({ error: "Unexpected response from upstream service." });
+    } catch (error) {
         console.error("Error fetching product:", error?.response?.data?.error_msg || error.message);
         return res.status(500).json({ error: "An error occurred while fetching the product." });
     }
