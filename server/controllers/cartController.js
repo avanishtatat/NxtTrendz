@@ -1,16 +1,18 @@
 import Cart from "../models/Cart.js";
 
 export const clearCartFunc = async (userId) => {
-    try {
-        await Cart.findOneAndUpdate({userId}, 
-            {items: []},
-            {new: true}
-        );
-    } catch (error) {
-        console.error("Error clearing cart:", error.message);
-        throw new Error("An error occurred while clearing the cart.");
-    }
-}
+  try {
+    const cart = await Cart.findOneAndUpdate(
+      { userId },
+      { items: [] },
+      { new: true },
+    );
+    return cart;
+  } catch (error) {
+    console.error("Error clearing cart:", error.message);
+    throw new Error("An error occurred while clearing the cart.");
+  }
+};
 
 export const getCart = async (req, res) => {
   const { id } = req.user;
@@ -39,7 +41,7 @@ export const addItemToCart = async (req, res) => {
   }
   try {
     const quantity = 1;
-    const updatedCart = await Cart.findByIdAndUpdate(
+    const updatedCart = await Cart.findOneAndUpdate(
       { userId: id, "items.productId": productId },
       { $inc: { "items.$.quantity": quantity } },
       { new: true },
@@ -47,7 +49,7 @@ export const addItemToCart = async (req, res) => {
     let cart = updatedCart;
     // If the product was not already in the cart, add it as a new item
     if (!updatedCart) {
-      cart = await Cart.findByIdAndUpdate(
+      cart = await Cart.findOneAndUpdate(
         { userId: id },
         {
           $push: {
@@ -69,13 +71,11 @@ export const addItemToCart = async (req, res) => {
       (total, item) => total + item.price * item.quantity,
       0,
     );
-    return res
-      .status(200)
-      .json({
-        cartList: cart.items,
-        totalAmount,
-        totalItems: cart.items.length,
-      });
+    return res.status(200).json({
+      cartList: cart.items,
+      totalAmount,
+      totalItems: cart.items.length,
+    });
   } catch (error) {
     console.error("Error adding item to cart:", error.message);
     return res
@@ -87,7 +87,12 @@ export const addItemToCart = async (req, res) => {
 export const updateItem = async (req, res) => {
   const { id } = req.user;
   const { productId, quantity } = req.body;
-  if (!productId || !quantity || quantity < 0) {
+  if (
+    !productId ||
+    quantity === undefined ||
+    quantity === null ||
+    quantity < 0
+  ) {
     return res
       .status(400)
       .json({ error: "Cannot update cart. Some error occurred." });
@@ -95,7 +100,7 @@ export const updateItem = async (req, res) => {
   try {
     let cart;
     if (quantity === 0) {
-      cart = await Cart.findByIdAndUpdate(
+      cart = await Cart.findOneAndUpdate(
         { userId: id },
         { $pull: { items: { productId } } },
         { new: true },
@@ -103,71 +108,84 @@ export const updateItem = async (req, res) => {
     }
     // If quantity is greater than 0, update the quantity of the existing item
     else {
-      cart = await Cart.findByIdAndUpdate(
+      cart = await Cart.findOneAndUpdate(
         { userId: id, "items.productId": productId },
         { $set: { "items.$.quantity": quantity } },
         { new: true },
       );
     }
+    if (!cart) {
+      return res.status(404).json({ error: "Cart not found." });
+    }
     const totalAmount = cart.items.reduce(
       (total, item) => total + item.price * item.quantity,
       0,
     );
-    return res
-      .status(200)
-      .json({
-        cartList: cart.items,
-        totalAmount,
-        totalItems: cart.items.length,
-      });
+    return res.status(200).json({
+      cartList: cart.items,
+      totalAmount,
+      totalItems: cart.items.length,
+    });
   } catch (error) {
     console.error("Error updating item in cart:", error.message);
-    return res
-      .status(500)
-      .json({
-        error: "An error occurred while updating the item in the cart.",
-      });
+    return res.status(500).json({
+      error: "An error occurred while updating the item in the cart.",
+    });
   }
 };
 
 export const removeItem = async (req, res) => {
-    const { id } = req.user; 
-    const { productId } = req.body;
-    if (!productId) {
-        return res.status(400).json({ error: "Cannot remove item from cart" });
+  const { id } = req.user;
+  const { productId } = req.params;
+  if (!productId) {
+    return res.status(400).json({ error: "Cannot remove item from cart" });
+  }
+  try {
+    const cart = await Cart.findOneAndUpdate(
+      { userId: id },
+      { $pull: { items: { productId } } },
+      { new: true },
+    );
+    if (!cart) {
+      return res.status(404).json({ error: "Cart not found." });
     }
-    try {
-        const cart  = await Cart.findByIdAndUpdate(
-            { userId: id },
-            { $pull: { items: { productId } } },
-            { new: true },
-        );
-        const totalAmount = cart.items.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0,
-        );
-        return res.status(200).json({ 
-            cartList: cart.items,
-            totalAmount,
-            totalItems: cart.items.length,
-         });
-     } catch (error) {
-         console.error("Error removing item from cart:", error.message);
-         return res.status(500).json({ error: "An error occurred while removing the item from the cart." });
-    }
-}
+    const totalAmount = cart.items.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0,
+    );
+    return res.status(200).json({
+      cartList: cart.items,
+      totalAmount,
+      totalItems: cart.items.length,
+    });
+  } catch (error) {
+    console.error("Error removing item from cart:", error.message);
+    return res
+      .status(500)
+      .json({
+        error: "An error occurred while removing the item from the cart.",
+      });
+  }
+};
 
 export const clearCart = async (req, res) => {
-    const { id } = req.user;
-    try {
-        const cart = await clearCartFunc(id);
-        return res.status(200).json({ 
-            cartList: cart.items,
-            totalAmount: 0,
-            totalItems: 0,
-         });
-    } catch (error) {
-        console.error("Error clearing cart:", error.message);
-        return res.status(500).json({ error: "An error occurred while clearing the cart." });
+  const { id } = req.user;
+  try {
+    const cart = await clearCartFunc(id);
+    if (!cart) {
+      return res
+        .status(200)
+        .json({ cartList: [], totalAmount: 0, totalItems: 0 });
     }
-}
+    return res.status(200).json({
+      cartList: cart.items,
+      totalAmount: 0,
+      totalItems: 0,
+    });
+  } catch (error) {
+    console.error("Error clearing cart:", error.message);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while clearing the cart." });
+  }
+};
