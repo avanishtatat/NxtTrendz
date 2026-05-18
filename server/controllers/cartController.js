@@ -95,7 +95,6 @@ export const updateItem = async (req, res) => {
     !productId ||
     quantity === undefined ||
     quantity === null ||
-    typeof quantity !== "number" ||
     !Number.isFinite(quantity) ||
     quantity < 0
   ) {
