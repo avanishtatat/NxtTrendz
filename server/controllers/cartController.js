@@ -22,9 +22,13 @@ export const getCart = async (req, res) => {
       return res.status(404).json({ error: "Cart not found for the user." });
     }
     if (cart.items.length === 0) {
-      return res.status(200).json({ message: "Cart is empty.", cartList: [] });
+      return res.status(200).json({ cartList: [], totalAmount: 0, totalItems: 0 });
     }
-    return res.status(200).json({ cartList: cart.items });
+    const totalAmount = cart.items.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0,
+    );
+    return res.status(200).json({ cartList: cart.items, totalAmount, totalItems: cart.items.length });
   } catch (error) {
     console.error("Error fetching cart:", error.message);
     return res
@@ -91,6 +95,8 @@ export const updateItem = async (req, res) => {
     !productId ||
     quantity === undefined ||
     quantity === null ||
+    typeof quantity !== "number" ||
+    !Number.isFinite(quantity) ||
     quantity < 0
   ) {
     return res
@@ -101,7 +107,7 @@ export const updateItem = async (req, res) => {
     let cart;
     if (quantity === 0) {
       cart = await Cart.findOneAndUpdate(
-        { userId: id },
+        { userId: id, "items.productId": productId },
         { $pull: { items: { productId } } },
         { new: true },
       );
