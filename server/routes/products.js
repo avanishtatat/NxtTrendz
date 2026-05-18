@@ -3,8 +3,9 @@ import { getPrimeProducts, getProductById, getProducts } from "../controllers/pr
 import { authMiddleware } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
-router.get("/", authMiddleware, getProducts);
-router.get("/prime", authMiddleware, getPrimeProducts);
-router.get("/:id", authMiddleware, getProductById);
+router.use(authMiddleware); // Apply authentication middleware to all product routes
+router.get("/", getProducts);
+router.get("/prime", getPrimeProducts);
+router.get("/:id", getProductById);
 
 export default router;

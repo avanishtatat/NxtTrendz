@@ -19,7 +19,7 @@ export const getCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ userId: id });
     if (!cart) {
-      return res.status(404).json({ error: "Cart not found for the user." });
+      return res.status(200).json({ cartList: [], totalAmount: 0, totalItems: 0 });
     }
     if (cart.items.length === 0) {
       return res.status(200).json({ cartList: [], totalAmount: 0, totalItems: 0 });
@@ -71,6 +71,9 @@ export const addItemToCart = async (req, res) => {
         { upsert: true, new: true },
       );
     }
+    if (!cart) {
+        return res.status(200).json({ cartList: [], totalAmount: 0, totalItems: 0 });
+    }
     const totalAmount = cart.items.reduce(
       (total, item) => total + item.price * item.quantity,
       0,
@@ -90,7 +93,8 @@ export const addItemToCart = async (req, res) => {
 
 export const updateItem = async (req, res) => {
   const { id } = req.user;
-  const { productId, quantity } = req.body;
+  const { productId } = req.params;
+  const { quantity } = req.body;
   if (
     !productId ||
     quantity === undefined ||
@@ -120,7 +124,7 @@ export const updateItem = async (req, res) => {
       );
     }
     if (!cart) {
-      return res.status(404).json({ error: "Cart not found." });
+      return res.status(200).json({ cartList: [], totalAmount: 0, totalItems: 0 });
     }
     const totalAmount = cart.items.reduce(
       (total, item) => total + item.price * item.quantity,
@@ -152,7 +156,7 @@ export const removeItem = async (req, res) => {
       { new: true },
     );
     if (!cart) {
-      return res.status(404).json({ error: "Cart not found." });
+      return res.status(200).json({ cartList: [], totalAmount: 0, totalItems: 0 });
     }
     const totalAmount = cart.items.reduce(
       (total, item) => total + item.price * item.quantity,

@@ -3,10 +3,11 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 import { addItemToCart, clearCart, getCart, removeItem, updateItem } from '../controllers/cartController.js';
 const router = express.Router();
 
-router.get("/", authMiddleware, getCart);
-router.post("/", authMiddleware, addItemToCart);
-router.patch("/", authMiddleware, updateItem);
-router.delete("/:productId", authMiddleware, removeItem);
-router.delete("/", authMiddleware, clearCart);
+router.use(authMiddleware); // Apply authentication middleware to all cart routes
+router.get("/", getCart);
+router.post("/", addItemToCart);
+router.patch("/:productId", updateItem);
+router.delete("/", clearCart); // Specific route to clear the entire cart
+router.delete("/:productId", removeItem); // Dynamic route to remove a specific item from the cart
 
 export default router;
