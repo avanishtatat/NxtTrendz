@@ -18,15 +18,25 @@ const razorpayInstance = new Razorpay({
 });
 
 const verifySignature = (razorpayOrderId, razorpayPaymentId, razorpaySignature) => {
+    if (
+        typeof razorpayOrderId !== "string" ||
+        typeof razorpayPaymentId !== "string" ||
+        typeof razorpaySignature !== "string" ||
+        !/^[a-f0-9]{64}$/i.test(razorpaySignature)
+    ) {
+        return false;
+    }
     const body = razorpayOrderId + "|" + razorpayPaymentId;
     const expectedSignature = crypto
         .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
         .update(body.toString())
         .digest("hex");
-    return crypto.timingSafeEqual(
-        Buffer.from(expectedSignature, "hex"),
-        Buffer.from(razorpaySignature, "hex")
-    );
+    const expectedBuffer = Buffer.from(expectedSignature, "hex");
+    const receivedBuffer = Buffer.from(razorpaySignature, "hex");
+    if (expectedBuffer.length !== receivedBuffer.length) {
+        return false;
+    }
+    return crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
 }
 
 export const createOrder = async (req, res) => {
@@ -37,8 +47,17 @@ export const createOrder = async (req, res) => {
         }
         const totalAmount = cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
         const options = { amount: totalAmount * 100, currency: "INR", receipt: `receipt_${Date.now()}` };
-        const order = await razorpayInstance.orders.create(options);
-        return res.status(201).json({ razorpayOrderId: order.id, amount: order.amount, currency: order.currency });
+        const razorpayOrder = await razorpayInstance.orders.create(options);
+        await Order.create({
+            userId: req.user.id,
+            items: cart.items,
+            status: "pending",
+            payment: {
+                razorpayOrderId: razorpayOrder.id,
+                status: "pending",
+            },
+        });
+        return res.status(201).json({ razorpayOrderId: razorpayOrder.id, amount: razorpayOrder.amount, currency: razorpayOrder.currency });
     } catch (error) {
         console.error("Error creating Razorpay order:", error.message);
         return res.status(500).json({ error: "An error occurred while creating the order." });
@@ -51,30 +70,25 @@ export const verifyPayment = async (req, res) => {
         return res.status(400).json({ error: "Missing required payment details." });
     }
     try {
-        const existingOrder = await Order.findOne({ "payment.razorpayOrderId": razorpayOrderId });
-        if (existingOrder) {
-            return res.status(409).json({ error: "This order has already been processed.", orderId: existingOrder._id });
+        const existingOrder = await Order.findOne({
+            userId: req.user.id,
+            "payment.razorpayOrderId": razorpayOrderId,
+        });
+        if (!existingOrder) {
+            return res.status(404).json({ error: "Order not found for verification." });
         }
-        const cart = await Cart.findOne({ userId: req.user.id });
-        if (!cart || cart.items.length === 0) {
-            return res.status(400).json({ error: "Cart is empty. Cannot verify payment." });
+        if (existingOrder.payment?.status === "paid") {
+            return res.status(409).json({ error: "This order has already been processed.", orderId: existingOrder._id });
         }
         const isValid = verifySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
         if (isValid) {
-            const order = new Order({
-                userId: req.user.id,
-                items: cart.items,
-                payment: {
-                    razorpayPaymentId,
-                    razorpayOrderId,
-                    razorpaySignature,
-                    status: "paid",
-                },
-                status: "processing",
-            });
-            await order.save();
+            existingOrder.payment.razorpayPaymentId = razorpayPaymentId;
+            existingOrder.payment.razorpaySignature = razorpaySignature;
+            existingOrder.payment.status = "paid";
+            existingOrder.status = "processing";
+            await existingOrder.save();
             await clearCartFunc(req.user.id); // Clear the cart after successful order creation
-            return res.status(200).json({ message: "Payment verified and order created successfully.", orderId: order._id });
+            return res.status(200).json({ message: "Payment verified and order created successfully.", orderId: existingOrder._id });
         } else {
             return res.status(400).json({ error: "Invalid payment signature." });
         }
@@ -108,14 +122,27 @@ export const verifyPrimePayment = async (req, res) => {
         return res.status(400).json({ error: "Missing required payment details." });
     }
     try {
+        const alreadyUsed = await User.findOne({ "primePayment.razorpayOrderId": razorpayOrderId });
+        if (alreadyUsed) {
+            return res.status(409).json({ error: "This prime order has already been processed." });
+        }
         const isValid = verifySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
         if (isValid) {
             const user = await User.findByIdAndUpdate(req.user.id, {
                 $set: {
                     isPrime: true,
-                    primeExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Set prime expiry to 30 days from now
+                    primeExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Set prime expiry to 30 days from now
+                    primePayment: {
+                        razorpayOrderId,
+                        razorpayPaymentId,
+                        razorpaySignature,
+                        paidAt: new Date(),
+                    },
                 }
             }, { new: true });
+            if (!user) {
+                return res.status(404).json({ error: "User not found." });
+            }
             const token = generateToken(user); // Generate a new token to reflect updated prime status
             return res.status(200).json({ message: "Prime membership activated successfully.", token, user: {
                 id: user._id,

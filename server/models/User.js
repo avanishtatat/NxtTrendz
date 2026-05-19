@@ -29,6 +29,24 @@ const userSchema = new mongoose.Schema(
             type: Date,
             default: null, // No expiration date by default
         },
+        primePayment: {
+            razorpayOrderId: {
+                type: String,
+                default: null,
+            },
+            razorpayPaymentId: {
+                type: String,
+                default: null,
+            },
+            razorpaySignature: {
+                type: String,
+                default: null,
+            },
+            paidAt: {
+                type: Date,
+                default: null,
+            },
+        },
     },
     { timestamps: true }
 );
