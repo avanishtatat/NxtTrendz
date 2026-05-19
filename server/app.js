@@ -8,7 +8,9 @@ import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/products.js";
-import cartRoutes from './routes/cart.js'
+import cartRoutes from './routes/cart.js';
+import paymentRoutes from './routes/payments.js';
+import orderRoutes from './routes/orders.js';
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.get("/health", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/payments", paymentRoutes);
+app.use("/api/v1/orders", orderRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
