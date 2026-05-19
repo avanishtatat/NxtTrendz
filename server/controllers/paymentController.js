@@ -6,6 +6,12 @@ import User from "../models/User.js";
 import { generateToken } from "../utils/generateToken.js";
 import { clearCartFunc } from "./cartController.js";
 
+const PRIME_PRICE_INR = 499; // Price for prime membership in INR
+
+if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error("Razorpay API keys must be defined in environment variables.");
+}
+
 const razorpayInstance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -17,7 +23,10 @@ const verifySignature = (razorpayOrderId, razorpayPaymentId, razorpaySignature) 
         .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
         .update(body.toString())
         .digest("hex");
-    return expectedSignature === razorpaySignature;
+    return crypto.timingSafeEqual(
+        Buffer.from(expectedSignature, "hex"),
+        Buffer.from(razorpaySignature, "hex")
+    );
 }
 
 export const createOrder = async (req, res) => {
@@ -44,7 +53,7 @@ export const verifyPayment = async (req, res) => {
     try {
         const existingOrder = await Order.findOne({ "payment.razorpayOrderId": razorpayOrderId });
         if (existingOrder) {
-            return res.status(200).json({ error: "This order has already been processed.", orderId: existingOrder._id });
+            return res.status(409).json({ error: "This order has already been processed.", orderId: existingOrder._id });
         }
         const cart = await Cart.findOne({ userId: req.user.id });
         if (!cart || cart.items.length === 0) {
@@ -84,7 +93,7 @@ export const createPrimeOrder = async (req, res) => {
         if (user.isPrime && user.primeExpiresAt > new Date()) {
             return res.status(400).json({ error: "You are already a prime member.", primeExpiresAt: user.primeExpiresAt });
         }
-        const options = { amount: 499 * 100, currency: "INR", receipt: `prime_receipt_${Date.now()}` };
+        const options = { amount: PRIME_PRICE_INR * 100, currency: "INR", receipt: `prime_receipt_${Date.now()}` };
         const primeOrder = await razorpayInstance.orders.create(options);
         return res.status(201).json({ razorpayOrderId: primeOrder.id, amount: primeOrder.amount, currency: primeOrder.currency });
     } catch (error) {
@@ -99,10 +108,6 @@ export const verifyPrimePayment = async (req, res) => {
         return res.status(400).json({ error: "Missing required payment details." });
     }
     try {
-        const existingOrder = await Order.findOne({ "payment.razorpayOrderId": razorpayOrderId });
-        if (existingOrder) {
-            return res.status(200).json({ error: "This order has already been processed.", orderId: existingOrder._id });
-        }
         const isValid = verifySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
         if (isValid) {
             const user = await User.findByIdAndUpdate(req.user.id, {
