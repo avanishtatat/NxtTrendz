@@ -1,6 +1,5 @@
 import {Component} from 'react'
 import { ThreeDots } from 'react-loader-spinner'
-import Cookies from 'js-cookie'
 
 import FiltersGroup from '../FiltersGroup'
 import ProductCard from '../ProductCard'
@@ -83,8 +82,15 @@ class AllProductsSection extends Component {
     activeRatingId: '',
   }
 
+  _isMounted = false
+
   componentDidMount() {
+    this._isMounted = true
     this.getProducts()
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   getProducts = async () => {
@@ -119,19 +125,26 @@ class AllProductsSection extends Component {
           imageUrl: product.image_url,
           rating: product.rating,
         }))
-        this.setState({
-          productsList: updatedData,
-          apiStatus: apiStatusConstants.success,
-        })
+        if (this._isMounted) {
+          this.setState({
+            productsList: updatedData,
+            apiStatus: apiStatusConstants.success,
+          })
+        }
       } else {
+        if (this._isMounted) {
+          this.setState({
+            apiStatus: apiStatusConstants.failure,
+          })
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error?.response?.data?.error_msg || error.message)
+      if (this._isMounted) {
         this.setState({
           apiStatus: apiStatusConstants.failure,
         })
       }
-    } catch (error) {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
     }
   }
 

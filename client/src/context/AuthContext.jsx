@@ -35,13 +35,6 @@ const AuthProvider = ({ children }) => {
         navigate('/')
     }
 
-    const logout = useCallback(() => {
-        setUser(null)
-        setToken(null)
-        localStorage.removeItem("token")
-        navigate('/login')
-    }, [navigate])
-
 
     const updatePrimeStatus = (isPrime, token) => {
         setUser((prevUser) => ({

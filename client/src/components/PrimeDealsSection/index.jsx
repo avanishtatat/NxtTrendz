@@ -19,8 +19,15 @@ class PrimeDealsSection extends Component {
     apiStatus: apiStatusConstants.initial,
   }
 
+  _isMounted = false
+
   componentDidMount() {
+    this._isMounted = true
     this.getPrimeDeals()
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   getPrimeDeals = async () => {
@@ -40,20 +47,27 @@ class PrimeDealsSection extends Component {
         imageUrl: product.image_url,
         rating: product.rating,
       }))
-      this.setState({
-        primeDeals: updatedData,
-        apiStatus: apiStatusConstants.success,
-      })
+      if (this._isMounted) {
+        this.setState({
+          primeDeals: updatedData,
+          apiStatus: apiStatusConstants.success,
+        })
+      }
     } 
     if (response.status === 403) {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+      if (this._isMounted) {
+        this.setState({
+          apiStatus: apiStatusConstants.failure,
+        })
+      }
     }
-  } catch (_err) {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+  } catch (error) {
+    console.error("Error fetching prime deals:", error?.response?.data?.error_msg || error.message)
+      if (this._isMounted) {
+        this.setState({
+          apiStatus: apiStatusConstants.failure,
+        })
+      }
     }
   }
 

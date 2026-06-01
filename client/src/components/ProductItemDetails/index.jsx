@@ -1,7 +1,6 @@
 import {Component} from 'react'
 import {Link, useParams} from 'react-router-dom'
-import Cookies from 'js-cookie'
-import { ThreeDots } from 'react-loader-spinner'
+import {ThreeDots} from 'react-loader-spinner'
 import {BsPlusSquare, BsDashSquare} from 'react-icons/bs'
 
 import CartContext from '../../context/CartContext'
@@ -27,8 +26,15 @@ class ProductItemDetails extends Component {
     quantity: 1,
   }
 
+  _isMounted = false
+
   componentDidMount() {
+    this._isMounted = true
     this.getProductData()
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   getFormattedData = data => ({
@@ -50,7 +56,7 @@ class ProductItemDetails extends Component {
     this.setState({
       apiStatus: apiStatusConstants.inProgress,
     })
-   
+
     try {
       const response = await axiosInstance.get(`/products/${id}`)
       if (response.status === 200) {
@@ -59,20 +65,26 @@ class ProductItemDetails extends Component {
         const updatedSimilarProductsData = fetchedData.similar_products.map(
           eachSimilarProduct => this.getFormattedData(eachSimilarProduct),
         )
-        this.setState({
-          productData: updatedData,
-          similarProductsData: updatedSimilarProductsData,
-          apiStatus: apiStatusConstants.success,
-        })
+        if (this._isMounted) {
+          this.setState({
+            productData: updatedData,
+            similarProductsData: updatedSimilarProductsData,
+            apiStatus: apiStatusConstants.success,
+          })
+        }
       } else {
+        if (this._isMounted) {
+          this.setState({
+            apiStatus: apiStatusConstants.failure,
+          })
+        }
+      }
+    } catch (error) {
+      if (this._isMounted) {
         this.setState({
           apiStatus: apiStatusConstants.failure,
         })
       }
-    } catch (error) {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
     }
   }
 
