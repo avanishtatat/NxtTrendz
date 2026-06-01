@@ -226,7 +226,7 @@ class ProductItemDetails extends Component {
 
 const ProductItemDetailsWrapper = () => {
   const params = useParams()
-  return <ProductItemDetails params={{params}} />
+  return <ProductItemDetails params={params} />
 }
 
 export default ProductItemDetailsWrapper

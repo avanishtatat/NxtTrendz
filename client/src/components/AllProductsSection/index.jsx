@@ -100,7 +100,15 @@ class AllProductsSection extends Component {
     } = this.state
     
     try {
-      const response = await axiosInstance.get(`/products?sort_by=${activeOptionId}&category=${activeCategoryId}&title_search=${searchInput}&rating=${activeRatingId}`)
+      const response = await axiosInstance.get('/products', {
+        params: {
+          sort_by: activeOptionId,
+          category: activeCategoryId,
+          title_search: searchInput,
+          rating: activeRatingId,
+        },
+      })
+        
       if (response.status === 200) {
         const fetchedData = response.data
         const updatedData = fetchedData.products.map(product => ({

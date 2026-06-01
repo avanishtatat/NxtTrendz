@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useState } from "react"
 import axiosInstance from "../api/axios"
 import { useNavigate } from "react-router-dom"
 
@@ -9,17 +9,24 @@ const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem("token") || null)
     const navigate = useNavigate()
 
+    const logout = useCallback(() => {
+        setUser(null)
+        setToken(null)
+        localStorage.removeItem("token")
+        navigate('/login')
+    }, [navigate])
+
     useEffect(() => {
         if (token) {
             axiosInstance.get("/auth/profile")
                 .then((response) => {
-                    setUser(response.data)
+                    setUser(response.data.user ?? response.data)
                 })
                 .catch((error) => {
                     logout()
                 })
         }
-    }, [token])
+    }, [token, logout])
 
     const login = (userData, token) => {
         setUser(userData)
@@ -28,12 +35,13 @@ const AuthProvider = ({ children }) => {
         navigate('/')
     }
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setUser(null)
         setToken(null)
         localStorage.removeItem("token")
         navigate('/login')
-    }
+    }, [navigate])
+
 
     const updatePrimeStatus = (isPrime, token) => {
         setUser((prevUser) => ({
