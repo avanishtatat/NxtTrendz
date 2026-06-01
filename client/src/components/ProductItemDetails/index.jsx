@@ -61,8 +61,9 @@ class ProductItemDetails extends Component {
       const response = await axiosInstance.get(`/products/${id}`)
       if (response.status === 200) {
         const fetchedData = response.data
-        const updatedData = this.getFormattedData(fetchedData)
-        const updatedSimilarProductsData = fetchedData.similar_products.map(
+        // console.log("Fetched product data:", fetchedData)
+        const updatedData = this.getFormattedData(fetchedData.product)
+        const updatedSimilarProductsData = fetchedData.product.similar_products.map(
           eachSimilarProduct => this.getFormattedData(eachSimilarProduct),
         )
         if (this._isMounted) {

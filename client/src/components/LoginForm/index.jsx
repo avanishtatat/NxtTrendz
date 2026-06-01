@@ -1,29 +1,30 @@
-import Cookies from 'js-cookie'
-import {Navigate, useNavigate} from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 import './index.css'
 import { useState } from 'react'
+import axiosInstance from '../../api/axios'
+import { useAuth } from '../../context/AuthContext'
 
 const LoginForm = () => {
-  const [username, setUsername] = useState('')
+  const { token, login: loginUser } = useAuth();
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
   const [showSubmitError, setShowSubmitError] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
-  const navigate = useNavigate()
 
-  const onChangeUsername = event => {
-    setUsername(event.target.value)
+  const onChangeEmail = event => {
+    setEmail(event.target.value)
   }
 
   const onChangePassword = event => {
     setPassword(event.target.value)
   }
 
-  const onSubmitSuccess = jwtToken => {
-    Cookies.set('jwt_token', jwtToken, {
-      expires: 30,
-    })
-    navigate('/')
+  const onSubmitSuccess = (user, token) => {
+    setErrorMsg('')
+    setShowSubmitError(false)
+    loginUser(user, token)
   }
 
   const onSubmitFailure = errMsg => {
@@ -32,23 +33,21 @@ const LoginForm = () => {
   }
 
   const submitForm = async event => {
+    // console.log("Submitting login form with:", { email, password })
     event.preventDefault()
-    const userDetails = {username, password}
-    const url = 'https://apis.ccbp.in/login'
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(userDetails),
-    }
+    setLoading(true)
+    const userDetails = {email, password}
     try {
-      const response = await fetch(url, options)
-      const data = await response.json()
-      if (response.ok === true) {
-        onSubmitSuccess(data.jwt_token)
-      } else {
-        onSubmitFailure(data.error_msg)
-      }
+      const response = await axiosInstance.post('/auth/login', userDetails)
+      // console.log("Login response:", response)
+      onSubmitSuccess(response?.data?.user, response?.data?.token)
     } catch (error) {
-      onSubmitFailure('Something went wrong. Please try again.')
+      setLoading(false)
+      const errMsg = error?.response?.data?.error || error?.response?.data?.error?.message || 'Something went wrong. Please try again.'
+      // console.log("Login error:", error)
+      onSubmitFailure(errMsg)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -73,24 +72,22 @@ const LoginForm = () => {
   const renderUsernameField = () => {
     return (
       <>
-        <label className="input-label" htmlFor="username">
-          USERNAME
+        <label className="input-label" htmlFor="email">
+          EMAIL
         </label>
         <input
-          type="text"
-          id="username"
-          className="username-input-field"
-          value={username}
-          onChange={onChangeUsername}
-          placeholder="Username"
+          type="email"
+          id="email"
+          className="email-input-field"
+          value={email}
+          onChange={onChangeEmail}
+          placeholder="Email"
         />
       </>
     )
   }
 
-  const jwtToken = Cookies.get('jwt_token')
-
-  if (jwtToken !== undefined) {
+  if (token) {
     return <Navigate to="/" replace />
   }
 
@@ -114,8 +111,8 @@ const LoginForm = () => {
         />
         <div className="input-container">{renderUsernameField()}</div>
         <div className="input-container">{renderPasswordField()}</div>
-        <button type="submit" className="login-button">
-          Login
+        <button type="submit" className="login-button" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
         </button>
         {showSubmitError && <p className="error-message">*{errorMsg}</p>}
       </form>

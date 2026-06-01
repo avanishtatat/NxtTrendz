@@ -21,6 +21,7 @@ axiosInstance.interceptors.response.use( response => response, error => {
             window.location.href = "/login";
         }
     }
+    return Promise.reject(error);
 });
 
 export default axiosInstance;
