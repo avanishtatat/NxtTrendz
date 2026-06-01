@@ -1,8 +1,9 @@
 import {Navigate, Outlet} from 'react-router-dom'
 import Cookie from 'js-cookie'
+import { useAuth } from '../../context/AuthContext';
 
 const ProtectedRoute = () => {
-  const token = Cookie.get('jwt_token')
+  const { token } = useAuth();
 
   return token ? <Outlet /> : <Navigate to="/login" replace />
 }
