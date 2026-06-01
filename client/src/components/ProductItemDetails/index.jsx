@@ -10,6 +10,7 @@ import Header from '../Header'
 import SimilarProductItem from '../SimilarProductItem'
 
 import './index.css'
+import axiosInstance from '../../api/axios'
 
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -43,25 +44,17 @@ class ProductItemDetails extends Component {
   })
 
   getProductData = async () => {
-    const {match} = this.props
-    const {params} = match
+    const {params} = this.props
     const {id} = params
 
     this.setState({
       apiStatus: apiStatusConstants.inProgress,
     })
-    const jwtToken = Cookies.get('jwt_token')
-    const apiUrl = `https://apis.ccbp.in/products/${id}`
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
+   
     try {
-      const response = await fetch(apiUrl, options)
-      if (response.ok) {
-        const fetchedData = await response.json()
+      const response = await axiosInstance.get(`/products/${id}`)
+      if (response.status === 200) {
+        const fetchedData = response.data
         const updatedData = this.getFormattedData(fetchedData)
         const updatedSimilarProductsData = fetchedData.similar_products.map(
           eachSimilarProduct => this.getFormattedData(eachSimilarProduct),
@@ -233,7 +226,7 @@ class ProductItemDetails extends Component {
 
 const ProductItemDetailsWrapper = () => {
   const params = useParams()
-  return <ProductItemDetails match={{params}} />
+  return <ProductItemDetails params={{params}} />
 }
 
 export default ProductItemDetailsWrapper

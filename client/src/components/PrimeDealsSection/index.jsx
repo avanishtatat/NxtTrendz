@@ -1,10 +1,10 @@
 import {Component} from 'react'
-import Cookies from 'js-cookie'
 import { ThreeDots } from 'react-loader-spinner'
 
 import ProductCard from '../ProductCard'
 
 import './index.css'
+import axiosInstance from '../../api/axios'
 
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -28,19 +28,10 @@ class PrimeDealsSection extends Component {
       apiStatus: apiStatusConstants.inProgress,
     })
 
-    const jwtToken = Cookies.get('jwt_token')
-
-    const apiUrl = 'https://apis.ccbp.in/prime-deals'
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
     try {
-      const response = await fetch(apiUrl, options)
-      if (response.ok === true) {
-        const fetchedData = await response.json()
+      const response = await axiosInstance.get('/products/prime')
+      if (response.status === 200) {
+        const fetchedData = response.data
         const updatedData = fetchedData.prime_deals.map(product => ({
           title: product.title,
         brand: product.brand,
@@ -53,7 +44,8 @@ class PrimeDealsSection extends Component {
         primeDeals: updatedData,
         apiStatus: apiStatusConstants.success,
       })
-    } else {
+    } 
+    if (response.status === 403) {
       this.setState({
         apiStatus: apiStatusConstants.failure,
       })

@@ -7,6 +7,7 @@ import ProductCard from '../ProductCard'
 import ProductsHeader from '../ProductsHeader'
 
 import './index.css'
+import axiosInstance from '../../api/axios'
 
 const categoryOptions = [
   {
@@ -90,24 +91,18 @@ class AllProductsSection extends Component {
     this.setState({
       apiStatus: apiStatusConstants.inProgress,
     })
-    const jwtToken = Cookies.get('jwt_token')
+   
     const {
       activeOptionId,
       activeCategoryId,
       searchInput,
       activeRatingId,
     } = this.state
-    const apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&category=${activeCategoryId}&title_search=${searchInput}&rating=${activeRatingId}`
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
+    
     try {
-      const response = await fetch(apiUrl, options)
-      if (response.ok) {
-        const fetchedData = await response.json()
+      const response = await axiosInstance.get(`/products?sort_by=${activeOptionId}&category=${activeCategoryId}&title_search=${searchInput}&rating=${activeRatingId}`)
+      if (response.status === 200) {
+        const fetchedData = response.data
         const updatedData = fetchedData.products.map(product => ({
           title: product.title,
           brand: product.brand,
