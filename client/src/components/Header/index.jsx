@@ -7,9 +7,6 @@ import { useAuth } from '../../context/AuthContext'
 
 const Header = () => {
   const { logout } = useAuth()
-  const onClickLogout = () => {
-    logout()
-  }
 
   const renderCartItemsCount = () => (
     <CartContext.Consumer>
@@ -43,7 +40,7 @@ const Header = () => {
           <button
             type="button"
             className="nav-mobile-btn"
-            onClick={onClickLogout}
+            onClick={logout}
           >
             <img
               src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-log-out-img.png"
@@ -84,7 +81,7 @@ const Header = () => {
           <button
             type="button"
             className="logout-desktop-btn"
-            onClick={onClickLogout}
+            onClick={logout}
           >
             Logout
           </button>

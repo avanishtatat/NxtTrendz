@@ -35,18 +35,15 @@ const LoginForm = () => {
   }
 
   const submitForm = async event => {
-    // console.log("Submitting login form with:", { email, password })
     event.preventDefault()
     setLoading(true)
     const userDetails = {email, password}
     try {
       const response = await axiosInstance.post('/auth/login', userDetails)
-      // console.log("Login response:", response)
       onSubmitSuccess(response?.data?.user, response?.data?.token)
     } catch (error) {
       setLoading(false)
       const errMsg = error?.response?.data?.error || error?.response?.data?.error?.message || 'Something went wrong. Please try again.'
-      // console.log("Login error:", error)
       onSubmitFailure(errMsg)
     } finally {
       setLoading(false)
