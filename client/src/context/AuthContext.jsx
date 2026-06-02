@@ -34,6 +34,7 @@ const AuthProvider = ({ children }) => {
                             isPrime: optimisticPrime.isPrime,
                             primeExpiresAt: optimisticPrime.primeExpiresAt,
                         })
+                        optimisticPrimeRef.current = null
                         return
                     }
 
