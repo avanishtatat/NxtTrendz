@@ -139,7 +139,7 @@ export const verifyPrimePayment = async (req, res) => {
                         paidAt: new Date(),
                     },
                 }
-            }, { new: true });
+            }, { returnDocument: "after" });
             if (!user) {
                 return res.status(404).json({ error: "User not found." });
             }

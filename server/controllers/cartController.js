@@ -5,7 +5,7 @@ export const clearCartFunc = async (userId) => {
     const cart = await Cart.findOneAndUpdate(
       { userId },
       { items: [] },
-      { new: true },
+      { returnDocument: "after" },
     );
     return cart;
   } catch (error) {
@@ -48,7 +48,7 @@ export const addItemToCart = async (req, res) => {
     const updatedCart = await Cart.findOneAndUpdate(
       { userId: id, "items.productId": productId },
       { $inc: { "items.$.quantity": quantity } },
-      { new: true },
+      { returnDocument: "after" },
     );
     let cart = updatedCart;
     // If the product was not already in the cart, add it as a new item
@@ -68,7 +68,7 @@ export const addItemToCart = async (req, res) => {
             },
           },
         },
-        { upsert: true, new: true },
+        { upsert: true, returnDocument: "after" },
       );
     }
     if (!cart) {
@@ -112,7 +112,7 @@ export const updateItem = async (req, res) => {
       cart = await Cart.findOneAndUpdate(
         { userId: id, "items.productId": productId },
         { $pull: { items: { productId } } },
-        { new: true },
+        { returnDocument: "after" },
       );
     }
     // If quantity is greater than 0, update the quantity of the existing item
@@ -120,7 +120,7 @@ export const updateItem = async (req, res) => {
       cart = await Cart.findOneAndUpdate(
         { userId: id, "items.productId": productId },
         { $set: { "items.$.quantity": quantity } },
-        { new: true },
+        { returnDocument: "after" },
       );
     }
     if (!cart) {
@@ -153,7 +153,7 @@ export const removeItem = async (req, res) => {
     const cart = await Cart.findOneAndUpdate(
       { userId: id },
       { $pull: { items: { productId } } },
-      { new: true },
+      { returnDocument: "after" },
     );
     if (!cart) {
       return res.status(200).json({ cartList: [], totalAmount: 0, totalItems: 0 });
