@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 import './index.css'
 import { useState } from 'react'
@@ -12,6 +12,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false)
   const [showSubmitError, setShowSubmitError] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
+  const navigate = useNavigate()
 
   const onChangeEmail = event => {
     setEmail(event.target.value)
@@ -25,6 +26,7 @@ const LoginForm = () => {
     setErrorMsg('')
     setShowSubmitError(false)
     loginUser(user, token)
+    navigate('/')
   }
 
   const onSubmitFailure = errMsg => {
@@ -69,7 +71,7 @@ const LoginForm = () => {
     )
   }
 
-  const renderUsernameField = () => {
+  const renderEmailField = () => {
     return (
       <>
         <label className="input-label" htmlFor="email">
@@ -109,13 +111,15 @@ const LoginForm = () => {
           className="login-website-logo-desktop-img"
           alt="website logo"
         />
-        <div className="input-container">{renderUsernameField()}</div>
+        <div className="input-container">{renderEmailField()}</div>
         <div className="input-container">{renderPasswordField()}</div>
         <button type="submit" className="login-button" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
         {showSubmitError && <p className="error-message">*{errorMsg}</p>}
+        <p className='auth-footer-text'>Don't have an account? <Link className='auth-footer-link' to="/signup">Sign Up</Link></p>
       </form>
+      
     </div>
   )
 }

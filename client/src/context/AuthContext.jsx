@@ -32,17 +32,17 @@ const AuthProvider = ({ children }) => {
         setUser(userData)
         setToken(token)
         localStorage.setItem("token", token)
-        navigate('/')
     }
 
 
-    const updatePrimeStatus = (isPrime, token) => {
+    const updatePrimeStatus = (isPrime, newToken, newExpiry) => {
         setUser((prevUser) => ({
             ...prevUser,
             isPrime,
+            primeExpiresAt: newExpiry
         }))
-        localStorage.setItem("token", token)
-        setToken(token)
+        localStorage.setItem("token", newToken)
+        setToken(newToken)
     }
 
     return (

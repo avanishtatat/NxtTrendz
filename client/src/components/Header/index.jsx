@@ -1,15 +1,14 @@
-import {Link, useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
+import { Link } from 'react-router-dom'
 
 import CartContext from '../../context/CartContext'
 
 import './index.css'
+import { useAuth } from '../../context/AuthContext'
 
 const Header = () => {
-  const navigate = useNavigate()
+  const { logout } = useAuth()
   const onClickLogout = () => {
-    Cookies.remove('jwt_token')
-    navigate('/login', { replace: true })
+    logout()
   }
 
   const renderCartItemsCount = () => (

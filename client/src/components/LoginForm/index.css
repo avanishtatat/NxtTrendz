@@ -136,3 +136,21 @@
   line-height: 16px;
   color: #ff0b37;
 }
+
+.auth-footer-text {
+  font-family: 'Roboto';
+  font-size: 14px;
+  color: #475569;
+  margin-top: 20px;
+}
+
+.auth-footer-link {
+  color: #0b69ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-footer-link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}

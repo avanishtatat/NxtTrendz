@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import CartContext from './context/CartContext'
 
 import './App.css'
+import SignUp from './pages/Auth/SignUp'
 
 class App extends Component {
   state = {
@@ -91,6 +92,7 @@ class App extends Component {
       >
         <Routes>
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
