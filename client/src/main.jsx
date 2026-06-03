@@ -12,7 +12,7 @@ root.render(
     <BrowserRouter>
       <AuthProvider>
         <Toaster position="top-center" toastOptions={{
-          duration: 3000
+          duration: 5000
         }} />
         <App />
       </AuthProvider>

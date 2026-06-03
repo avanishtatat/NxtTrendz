@@ -1,11 +1,12 @@
 import {Link, Navigate, useNavigate} from 'react-router-dom'
 
-import './SignUp.css'
+import './index.css'
 import {useState} from 'react'
 import axiosInstance from '../../api/axios'
 import {useAuth} from '../../context/AuthContext'
-import {FiLock, FiMail, FiUser} from 'react-icons/fi'
+import {FiArrowRight, FiLock, FiMail, FiUser} from 'react-icons/fi'
 import toast from 'react-hot-toast'
+import AuthInput from '../../components/AuthInput'
 
 const SignUp = () => {
   const {token, login: loginUser, user, updatePrimeStatus} = useAuth()
@@ -71,17 +72,17 @@ const SignUp = () => {
                 razorpaySignature: razorpay_signature,
               },
             )
-            
-              const {
-                token: newToken,
-                user: updatedUser
-              } = verifyResponse.data
-              updatePrimeStatus(updatedUser.isPrime, newToken, updatedUser.primeExpiresAt)
-              toast.success(
-                'Payment successful! Your account has been upgraded to Prime.',
-              )
-              navigate('/')
-            
+
+            const {token: newToken, user: updatedUser} = verifyResponse.data
+            updatePrimeStatus(
+              updatedUser.isPrime,
+              newToken,
+              updatedUser.primeExpiresAt,
+            )
+            toast.success(
+              'Payment successful! Your account has been upgraded to Prime.',
+            )
+            navigate('/')
           } catch (error) {
             console.error('Error verifying payment:', error)
             toast.error(
@@ -106,7 +107,6 @@ const SignUp = () => {
       })
 
       rzp.open()
-
     } catch (error) {
       console.error(
         'Error initiating Razorpay payment:',
@@ -116,7 +116,7 @@ const SignUp = () => {
         'Failed to initiate payment. Please try again later or contact support.',
       )
       navigate('/')
-    } 
+    }
   }
 
   const submitForm = async event => {
@@ -131,6 +131,9 @@ const SignUp = () => {
         setProcessingPrime(true)
         await handlePrimePayment()
       } else {
+        toast.success(
+          'Account created successfully! You can upgrade to Prime anytime.',
+        )
         navigate('/')
       }
     } catch (error) {
@@ -147,74 +150,10 @@ const SignUp = () => {
     }
   }
 
-  const renderNameField = () => {
-    return (
-      <>
-        <label className="input-label" htmlFor="name">
-          Name
-        </label>
-        <div className="input-wrapper">
-          <FiUser className="input-icon" />
-          <input
-            type="text"
-            id="name"
-            className="input-field"
-            value={name}
-            onChange={onChangeName}
-            placeholder="Avanish Tiwari"
-          />
-        </div>
-      </>
-    )
-  }
-
-  const renderPasswordField = () => {
-    return (
-      <>
-        <label className="input-label" htmlFor="password">
-          PASSWORD
-        </label>
-        <div className="input-wrapper">
-          <FiLock className="input-icon" />
-
-          <input
-            type="password"
-            id="password"
-            className="input-field"
-            value={password}
-            onChange={onChangePassword}
-            placeholder="••••••••"
-          />
-        </div>
-      </>
-    )
-  }
-
-  const renderEmailField = () => {
-    return (
-      <>
-        <label className="input-label" htmlFor="email">
-          EMAIL
-        </label>
-        <div className="input-wrapper">
-          <FiMail className="input-icon" />
-          <input
-            type="email"
-            id="email"
-            className="input-field"
-            value={email}
-            onChange={onChangeEmail}
-            placeholder="avanishtiwari@example.com"
-          />
-        </div>
-      </>
-    )
-  }
-
   const renderSelectMembershipPlan = () => {
     return (
       <>
-        <span className="input-label">SELECT MEMBERSHIP</span>
+        <span className="membership-label">SELECT MEMBERSHIP</span>
         <div className="membership-plans-container">
           {/* FREE PLAN */}
           <div
@@ -262,35 +201,63 @@ const SignUp = () => {
   }
 
   return (
-    <div className="login-form-container">
+    <div className="auth-form-container">
       <img
         src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
-        className="login-website-logo-mobile-img"
+        className="auth-website-logo-mobile-img"
         alt="website logo"
       />
       <img
         src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-login-img.png"
-        className="login-img"
+        className="auth-hero-img"
         alt="website login"
       />
       <form className="form-container" onSubmit={submitForm}>
         <img
           src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
-          className="login-website-logo-desktop-img"
+          className="auth-website-logo-desktop-img"
           alt="website logo"
         />
-        <div className="signup-header">
-          <h1 className="signup-heading">Create Your Account</h1>
-          <p className="signup-subheading">
+        <div className="auth-header">
+          <h1 className="auth-heading">Create Your Account</h1>
+          <p className="auth-subheading">
             Enter your details to start your journey with us!
           </p>
         </div>
-        <div className="input-container">{renderNameField()}</div>
-        <div className="input-container">{renderEmailField()}</div>
-        <div className="input-container">{renderPasswordField()}</div>
-        <div className="input-container">{renderSelectMembershipPlan()}</div>
-        <button type="submit" className="login-button" disabled={loading}>
+        <AuthInput
+          label="NAME"
+          id="name"
+          type="text"
+          value={name}
+          onChange={onChangeName}
+          placeholder="Avanish Tiwari"
+          Icon={FiUser}
+        />
+        <AuthInput
+          label="EMAIL"
+          id="email"
+          type="email"
+          value={email}
+          onChange={onChangeEmail}
+          placeholder="avanishtiwari@example.com"
+          Icon={FiMail}
+        />
+        <AuthInput
+          label="PASSWORD"
+          id="password"
+          type="password"
+          value={password}
+          onChange={onChangePassword}
+          placeholder="••••••••"
+          Icon={FiLock}
+        />
+
+        <div className="membership-container">
+          {renderSelectMembershipPlan()}
+        </div>
+        <button type="submit" className="auth-submit-btn" disabled={loading}>
           {loading ? 'Signing up...' : 'Sign Up'}
+          <FiArrowRight className="submit-btn-icon" />
         </button>
         {showSubmitError && <p className="error-message">*{errorMsg}</p>}
         <p className="auth-footer-text">

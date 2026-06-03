@@ -1,7 +1,7 @@
 import {Component} from 'react'
 import {Route, Routes, Navigate} from 'react-router-dom'
 
-import LoginForm from './components/LoginForm'
+import LoginForm from './pages/Auth/LogIn'
 import Home from './components/Home'
 import Products from './components/Products'
 import ProductItemDetails from './components/ProductItemDetails'
