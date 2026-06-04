@@ -1,22 +1,17 @@
 import CartItem from '../CartItem'
-import CartContext from '../../context/CartContext'
+import CartContext, {useCart} from '../../context/CartContext'
 
 import './index.css'
 
-const CartListView = () => (
-  <CartContext.Consumer>
-    {value => {
-      const {cartList} = value
+const CartListView = () => {
+  const {cartList} = useCart()
 
-      return (
-        <ul className="cart-list">
-          {cartList.map(eachCartItem => (
-            <CartItem key={eachCartItem.id} cartItemDetails={eachCartItem} />
-          ))}
-        </ul>
-      )
-    }}
-  </CartContext.Consumer>
-)
-
+  return (
+    <ul className="cart-list">
+      {cartList.map(eachCartItem => (
+        <CartItem key={eachCartItem.productId} cartItemDetails={eachCartItem} />
+      ))}
+    </ul>
+  )
+}
 export default CartListView

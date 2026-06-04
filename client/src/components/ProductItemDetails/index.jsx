@@ -1,9 +1,9 @@
-import {Component} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Component, useState} from 'react'
+import {Link, useNavigate, useParams} from 'react-router-dom'
 import {ThreeDots} from 'react-loader-spinner'
 import {BsPlusSquare, BsDashSquare} from 'react-icons/bs'
 
-import CartContext from '../../context/CartContext'
+import {useCart} from '../../context/CartContext'
 
 import Header from '../Header'
 import SimilarProductItem from '../SimilarProductItem'
@@ -23,7 +23,7 @@ class ProductItemDetails extends Component {
     productData: {},
     similarProductsData: [],
     apiStatus: apiStatusConstants.initial,
-    quantity: 1,
+    isAlreadyInCart: false,
   }
 
   _isMounted = false
@@ -66,11 +66,16 @@ class ProductItemDetails extends Component {
         const updatedSimilarProductsData = fetchedData.product.similar_products.map(
           eachSimilarProduct => this.getFormattedData(eachSimilarProduct),
         )
+        const {cartList} = this.props
+        const isAlreadyInCart = cartList.some(
+          item => item.productId === updatedData.id,
+        )
         if (this._isMounted) {
           this.setState({
             productData: updatedData,
             similarProductsData: updatedSimilarProductsData,
             apiStatus: apiStatusConstants.success,
+            isAlreadyInCart,
           })
         }
       } else {
@@ -109,106 +114,91 @@ class ProductItemDetails extends Component {
     </div>
   )
 
-  onDecrementQuantity = () => {
-    const {quantity} = this.state
-    if (quantity > 1) {
-      this.setState(prevState => ({quantity: prevState.quantity - 1}))
+  setIsAlreadyInCart = value => {
+    this.setState({isAlreadyInCart: value})
+  }
+
+  renderProductDetailsView = () => {
+    const {productData, quantity, similarProductsData} = this.state
+    const {
+      availability,
+      brand,
+      description,
+      imageUrl,
+      price,
+      rating,
+      title,
+      totalReviews,
+    } = productData
+    const {
+      addCartItem,
+      navigate,
+    } = this.props
+    const onClickAddToCart = () => {
+      addCartItem(productData)
     }
-  }
 
-  onIncrementQuantity = () => {
-    this.setState(prevState => ({quantity: prevState.quantity + 1}))
-  }
-
-  renderProductDetailsView = () => (
-    <CartContext.Consumer>
-      {value => {
-        const {productData, quantity, similarProductsData} = this.state
-        const {
-          availability,
-          brand,
-          description,
-          imageUrl,
-          price,
-          rating,
-          title,
-          totalReviews,
-        } = productData
-        const {addCartItem} = value
-        const onClickAddToCart = () => {
-          addCartItem({...productData, quantity})
-        }
-
-        return (
-          <div className="product-details-success-view">
-            <div className="product-details-container">
-              <img src={imageUrl} alt="product" className="product-image" />
-              <div className="product">
-                <h1 className="product-name">{title}</h1>
-                <p className="price-details">Rs {price}/-</p>
-                <div className="rating-and-reviews-count">
-                  <div className="rating-container">
-                    <p className="rating">{rating}</p>
-                    <img
-                      src="https://assets.ccbp.in/frontend/react-js/star-img.png"
-                      alt="star"
-                      className="star"
-                    />
-                  </div>
-                  <p className="reviews-count">{totalReviews} Reviews</p>
-                </div>
-                <p className="product-description">{description}</p>
-                <div className="label-value-container">
-                  <p className="label">Available:</p>
-                  <p className="value">{availability}</p>
-                </div>
-                <div className="label-value-container">
-                  <p className="label">Brand:</p>
-                  <p className="value">{brand}</p>
-                </div>
-                <hr className="horizontal-line" />
-                <div className="quantity-container">
-                  <button
-                    type="button"
-                    className="quantity-controller-button"
-                    onClick={this.onDecrementQuantity}
-                    data-testid="minus"
-                  >
-                    <BsDashSquare className="quantity-controller-icon" />
-                  </button>
-                  <p className="quantity">{quantity}</p>
-                  <button
-                    type="button"
-                    className="quantity-controller-button"
-                    onClick={this.onIncrementQuantity}
-                    data-testid="plus"
-                  >
-                    <BsPlusSquare className="quantity-controller-icon" />
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  className="button add-to-cart-btn"
-                  onClick={onClickAddToCart}
-                >
-                  ADD TO CART
-                </button>
-              </div>
-            </div>
-            <h1 className="similar-products-heading">Similar Products</h1>
-            <ul className="similar-products-list">
-              {similarProductsData.map(eachSimilarProduct => (
-                <SimilarProductItem
-                  productDetails={eachSimilarProduct}
-                  key={eachSimilarProduct.id}
+    return (
+      <div className="product-details-success-view">
+        <div className="product-details-container">
+          <img src={imageUrl} alt="product" className="product-image" />
+          <div className="product">
+            <h1 className="product-name">{title}</h1>
+            <p className="price-details">Rs {price}/-</p>
+            <div className="rating-and-reviews-count">
+              <div className="rating-container">
+                <p className="rating">{rating}</p>
+                <img
+                  src="https://assets.ccbp.in/frontend/react-js/star-img.png"
+                  alt="star"
+                  className="star"
                 />
-              ))}
-            </ul>
+              </div>
+              <p className="reviews-count">{totalReviews} Reviews</p>
+            </div>
+            <p className="product-description">{description}</p>
+            <div className="label-value-container">
+              <p className="label">Available:</p>
+              <p className="value">{availability}</p>
+            </div>
+            <div className="label-value-container">
+              <p className="label">Brand:</p>
+              <p className="value">{brand}</p>
+            </div>
+
+            {this.state.isAlreadyInCart ? (
+              <button
+                className="button go-to-cart-btn"
+                onClick={() => navigate('/cart')}
+              >
+                GO TO CART
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="button add-to-cart-btn"
+                onClick={() => {
+                  onClickAddToCart()
+                  this.setIsAlreadyInCart(true)
+                }}
+              >
+                ADD TO CART
+              </button>
+            )}
           </div>
-        )
-      }}
-    </CartContext.Consumer>
-  )
+        </div>
+        <h1 className="similar-products-heading">Similar Products</h1>
+        <ul className="similar-products-list">
+          {similarProductsData.map(eachSimilarProduct => (
+            <SimilarProductItem
+              productDetails={eachSimilarProduct}
+              key={eachSimilarProduct.id}
+            />
+          ))}
+        </ul>
+      </div>
+    )
+  }
 
   renderProductDetails = () => {
     const {apiStatus} = this.state
@@ -238,8 +228,19 @@ class ProductItemDetails extends Component {
 }
 
 const ProductItemDetailsWrapper = () => {
+  const navigate = useNavigate()
   const params = useParams()
-  return <ProductItemDetails params={params} />
+  const {addCartItem, cartList} = useCart()
+  const productId = params.id
+
+  return (
+    <ProductItemDetails
+      params={params}
+      addCartItem={addCartItem}
+      navigate={navigate}
+      cartList={cartList}
+    />
+  )
 }
 
 export default ProductItemDetailsWrapper

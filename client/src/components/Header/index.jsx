@@ -1,29 +1,23 @@
-import { Link } from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
-import CartContext from '../../context/CartContext'
+import {useCart} from '../../context/CartContext'
 
 import './index.css'
-import { useAuth } from '../../context/AuthContext'
 
 const Header = () => {
-  const { logout } = useAuth()
+  const {logout} = useAuth()
+  const {cartList} = useCart()
 
-  const renderCartItemsCount = () => (
-    <CartContext.Consumer>
-      {value => {
-        const {cartList} = value
-        const cartItemsCount = cartList.length
+  const renderCartItemsCount = () => {
 
-        return (
-          <>
-            {cartItemsCount > 0 ? (
-              <span className="cart-count-badge">{cartList.length}</span>
-            ) : null}
-          </>
-        )
-      }}
-    </CartContext.Consumer>
-  )
+    return (
+      <>
+        {cartList.length > 0 ? (
+          <span className="cart-count-badge">{cartList.reduce((acc, item) => acc + item.quantity, 0)}</span>
+        ) : null}
+      </>
+    )
+  }
 
   return (
     <nav className="nav-header">
@@ -37,11 +31,7 @@ const Header = () => {
             />
           </Link>
 
-          <button
-            type="button"
-            className="nav-mobile-btn"
-            onClick={logout}
-          >
+          <button type="button" className="nav-mobile-btn" onClick={logout}>
             <img
               src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-log-out-img.png"
               alt="nav logout"
@@ -78,11 +68,7 @@ const Header = () => {
               </Link>
             </li>
           </ul>
-          <button
-            type="button"
-            className="logout-desktop-btn"
-            onClick={logout}
-          >
+          <button type="button" className="logout-desktop-btn" onClick={logout}>
             Logout
           </button>
         </div>

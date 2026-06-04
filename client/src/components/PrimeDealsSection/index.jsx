@@ -39,7 +39,7 @@ class PrimeDealsSection extends Component {
       const response = await axiosInstance.get('/products/prime')
       if (response.status === 200) {
         const fetchedData = response.data
-        const updatedData = fetchedData.prime_deals.map(product => ({
+        const updatedData = fetchedData.primeDeals.map(product => ({
           title: product.title,
         brand: product.brand,
         price: product.price,
