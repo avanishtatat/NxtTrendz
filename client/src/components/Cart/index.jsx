@@ -3,7 +3,7 @@ import {IoMdClose} from 'react-icons/io'
 import Header from '../Header'
 import CartListView from '../CartListView'
 
-import CartContext, {useCart} from '../../context/CartContext'
+import {useCart} from '../../context/CartContext'
 import EmptyCartView from '../EmptyCartView'
 import CartSummary from '../CartSummary'
 
@@ -19,7 +19,7 @@ const Cart = () => {
   const onClickRemoveAll = () => {
     removeAllCartItems()
   }
-  const orderTotal = (cartList || []).reduce(
+  const orderTotal = cartList.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
   )

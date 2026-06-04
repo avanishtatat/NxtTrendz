@@ -1,5 +1,5 @@
 import CartItem from '../CartItem'
-import CartContext, {useCart} from '../../context/CartContext'
+import {useCart} from '../../context/CartContext'
 
 import './index.css'
 

@@ -1,4 +1,4 @@
-import {Component, useState} from 'react'
+import {Component} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {ThreeDots} from 'react-loader-spinner'
 import {BsPlusSquare, BsDashSquare} from 'react-icons/bs'
@@ -61,7 +61,6 @@ class ProductItemDetails extends Component {
       const response = await axiosInstance.get(`/products/${id}`)
       if (response.status === 200) {
         const fetchedData = response.data
-        // console.log("Fetched product data:", fetchedData)
         const updatedData = this.getFormattedData(fetchedData.product)
         const updatedSimilarProductsData = fetchedData.product.similar_products.map(
           eachSimilarProduct => this.getFormattedData(eachSimilarProduct),
@@ -119,7 +118,7 @@ class ProductItemDetails extends Component {
   }
 
   renderProductDetailsView = () => {
-    const {productData, quantity, similarProductsData} = this.state
+    const {productData, similarProductsData} = this.state
     const {
       availability,
       brand,
@@ -231,7 +230,6 @@ const ProductItemDetailsWrapper = () => {
   const navigate = useNavigate()
   const params = useParams()
   const {addCartItem, cartList} = useCart()
-  const productId = params.id
 
   return (
     <ProductItemDetails

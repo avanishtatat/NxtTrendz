@@ -1,8 +1,8 @@
-import CartContext, {useCart} from '../../context/CartContext'
+import {useCart} from '../../context/CartContext'
 import './index.css'
 
 const CartSummary = () => {
-  const {cartList, setIsOpen} = useCart()
+  const {cartList, toggleIsOpen} = useCart()
 
   const orderTotal = cartList.reduce(
     (acc, sum) => acc + sum.price * sum.quantity,
@@ -18,7 +18,7 @@ const CartSummary = () => {
       <p className="cart-summary-item-count">
         {cartList.length} {cartList.length === 1 ? 'Item' : 'Items'} in cart
       </p>
-      <button type="button" className="checkout-btn" onClick={setIsOpen}>
+      <button type="button" className="checkout-btn" onClick={toggleIsOpen}>
         Checkout
       </button>
     </div>

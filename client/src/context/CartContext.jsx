@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 const debounce = (fn, delay) => {
   let timeoutId
-  return (...args) => {
+  const debounced = (...args) => {
     if (timeoutId) {
       clearTimeout(timeoutId)
     }
@@ -13,6 +13,12 @@ const debounce = (fn, delay) => {
       fn(...args)
     }, delay)
   }
+  debounced.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+  }
+  return debounced
 }
 
 const CartContext = createContext()
@@ -33,6 +39,12 @@ const CartProvider = ({children}) => {
       }
     }, 500),
   )
+
+  useEffect(() => {
+    return () => {
+      debounceUpdateRef.current.cancel()
+    }
+  }, [])
 
   useEffect(() => {
     if (token) {
@@ -84,6 +96,11 @@ const CartProvider = ({children}) => {
 
   const incrementCartItemQuantity = async id => {
     const item = cartList.find(item => item.productId === id)
+    if (!item) {
+      console.error("Item not found in cart:", id)
+      toast.error('Item not found in cart.')
+      return
+    }
     setCartList(prevCartList =>
       prevCartList.map(item => {
         if (item.productId === id) {
@@ -97,6 +114,11 @@ const CartProvider = ({children}) => {
 
   const decrementCartItemQuantity = id => {
     const item = cartList.find(item => item.productId === id)
+    if (!item) {
+      console.error("Item not found in cart:", id)
+      toast.error('Item not found in cart.')
+      return
+    }
     if (item.quantity === 1) {
       removeCartItem(id)
       return

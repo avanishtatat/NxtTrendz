@@ -1,5 +1,5 @@
 import {Component} from 'react'
-import { ThreeDots } from 'react-loader-spinner'
+import {ThreeDots} from 'react-loader-spinner'
 
 import ProductCard from '../ProductCard'
 
@@ -41,28 +41,30 @@ class PrimeDealsSection extends Component {
         const fetchedData = response.data
         const updatedData = fetchedData.primeDeals.map(product => ({
           title: product.title,
-        brand: product.brand,
-        price: product.price,
-        id: product.id,
-        imageUrl: product.image_url,
-        rating: product.rating,
-      }))
-      if (this._isMounted) {
-        this.setState({
-          primeDeals: updatedData,
-          apiStatus: apiStatusConstants.success,
-        })
+          brand: product.brand,
+          price: product.price,
+          id: product.id,
+          imageUrl: product.image_url,
+          rating: product.rating,
+        }))
+        if (this._isMounted) {
+          this.setState({
+            primeDeals: updatedData,
+            apiStatus: apiStatusConstants.success,
+          })
+        }
+      } else if (response.status === 403) {
+        if (this._isMounted) {
+          this.setState({
+            apiStatus: apiStatusConstants.failure,
+          })
+        }
       }
-    } 
-    if (response.status === 403) {
-      if (this._isMounted) {
-        this.setState({
-          apiStatus: apiStatusConstants.failure,
-        })
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching prime deals:", error?.response?.data?.error_msg || error.message)
+    } catch (error) {
+      console.error(
+        'Error fetching prime deals:',
+        error?.response?.data?.error_msg || error.message,
+      )
       if (this._isMounted) {
         this.setState({
           apiStatus: apiStatusConstants.failure,
