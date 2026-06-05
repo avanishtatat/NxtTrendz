@@ -7,7 +7,8 @@ import { useAuth } from '../../context/AuthContext'
 
 const CartSummary = () => {
   const {cartList, removeAllCartItems} = useCart()
-  const { user } = useAuth()
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  const { user } = useAuth() ?? {}
   const navigate = useNavigate()
 
   const orderTotal = cartList.reduce(
@@ -16,6 +17,10 @@ const CartSummary = () => {
   )
 
   const handleCheckout = async () => {
+    if (isProcessingPayment) {
+      return
+    }
+    setIsProcessingPayment(true)
     try {
       const response = await axiosInstance.post('/payments/create-order')
       const {razorpayOrderId, amount, currency} = response.data
@@ -45,18 +50,21 @@ const CartSummary = () => {
           }
         },
         prefill: {
-          name: user.name || '',
-          email: user.email || '',
+          name: user?.name || '',
+          email: user?.email || '',
         },
         theme: {
           color: '#F37254',
         },
       }
+      if (!window.Razorpay) {
+        toast.error('Payment service is currently unavailable. Please refresh and try again.')
+        return
+      }
       const rzp = new window.Razorpay(options)
       rzp.on('payment.failed', function (response) {
         console.error('Payment failed:', response.error)
         toast.error('Payment failed. Please try again.')
-        navigate('/cart')
       })
       rzp.open()
       
@@ -76,8 +84,8 @@ const CartSummary = () => {
       <p className="cart-summary-item-count">
         {cartList.length} {cartList.length === 1 ? 'Item' : 'Items'} in cart
       </p>
-      <button type="button" className="checkout-btn" onClick={handleCheckout}>
-        Checkout
+      <button type="button" className="checkout-btn" onClick={handleCheckout} disabled={isProcessingPayment}>
+        {isProcessingPayment ? 'Processing...' : 'Checkout'}
       </button>
     </div>
   )
