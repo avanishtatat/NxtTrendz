@@ -27,7 +27,6 @@ const CartProvider = ({children}) => {
   const {token} = useAuth()
   const [cartList, setCartList] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
 
   const debounceUpdateRef = useRef(
     debounce(async (id, quantity) => {
@@ -65,10 +64,6 @@ const CartProvider = ({children}) => {
       setCartList([])
     }
   }, [token])
-
-  const toggleIsOpen = () => {
-    setIsOpen(prevState => !prevState)
-  }
 
   const removeAllCartItems = async () => {
     const previous = cartList
@@ -160,8 +155,6 @@ const CartProvider = ({children}) => {
       value={{
         cartList,
         isLoading,
-        isOpen,
-        toggleIsOpen,
         addCartItem,
         removeCartItem,
         removeAllCartItems,
