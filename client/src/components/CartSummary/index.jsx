@@ -4,6 +4,7 @@ import {useCart} from '../../context/CartContext'
 import './index.css'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useState } from 'react'
 
 const CartSummary = () => {
   const {cartList, removeAllCartItems} = useCart()
@@ -41,11 +42,16 @@ const CartSummary = () => {
               razorpaySignature: razorpay_signature,
             })
             removeAllCartItems()
-            toast.success(verifyResponse.data.message || 'Payment successful! Your order has been placed.')
-            navigate('/order-success')
+            toast.success(verifyResponse.data?.message || 'Payment successful! Your order has been placed.')
+            navigate('/order-success', {
+              state: {
+                orderId: verifyResponse.data?.orderId,
+                orderAmount: verifyResponse.data?.totalAmount,
+              }
+            })
           } catch (error) {
             console.error('Payment verification failed:', error)
-            toast.error('Payment verification failed. Please contact support.')
+            toast.error(error?.response?.data?.error || 'Payment verification failed. Please contact support.')
 
           }
         },
@@ -69,9 +75,11 @@ const CartSummary = () => {
       rzp.open()
       
     } catch (error) {
-      console.error('Checkout failed:', error)
-      toast.error('Checkout failed. Please try again.')
+      toast.error(error?.response?.data?.error || 'Checkout failed. Please try again.')
+      setIsProcessingPayment(false)
       navigate('/cart')
+    } finally {
+      setIsProcessingPayment(false)
     }
   }
 

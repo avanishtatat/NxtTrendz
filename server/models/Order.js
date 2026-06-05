@@ -80,22 +80,20 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Pre-save hook to ensure that orders cannot be marked as shipped or delivered if payment is not completed
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save", function () {
   if (
     ["shipped", "delivered"].includes(this.status) &&
     this.payment?.status !== "paid"
   ) {
-    return next(
-      new Error(
-        `Cannot update order status to ${this.status} when payment status is ${this.payment.status}. Please ensure payment is completed before updating order status.`,
-      ),
+    throw new Error(
+      `Cannot update order status to ${this.status} when payment status is ${this.payment.status}. Please ensure payment is completed before updating order status.`,
     );
   }
-  next();
+
 });
 
 // Automatically calculate totalAmount before saving a new order
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save", function () {
     if (this.isNew) {
         // For new orders, calculate totalAmount from items
         this.totalAmount = this.items.reduce(
@@ -103,7 +101,6 @@ orderSchema.pre("save", function (next) {
             0,
         );
     }   
-    next();
 });
 
 // Validate that the order contains at least one item
