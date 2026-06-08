@@ -1,7 +1,8 @@
-import {Link} from 'react-router-dom'
+import {Link, NavLink} from 'react-router-dom'
 
 import {useAuth} from '../../context/AuthContext'
 import {useCart} from '../../context/CartContext'
+import { FaShoppingBag } from "react-icons/fa";
 
 import './index.css'
 
@@ -51,22 +52,27 @@ const Header = () => {
           </Link>
           <ul className="nav-menu">
             <li className="nav-menu-item">
-              <Link to="/" className="nav-link">
+              <NavLink to="/" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
                 Home
-              </Link>
+              </NavLink>
             </li>
 
             <li className="nav-menu-item">
-              <Link to="/products" className="nav-link">
+              <NavLink to="/products" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
                 Products
-              </Link>
+              </NavLink>
             </li>
 
             <li className="nav-menu-item">
-              <Link to="/cart" className="nav-link">
+              <NavLink to="/cart" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
                 Cart
                 {renderCartItemsCount()}
-              </Link>
+              </NavLink>
+            </li>
+            <li className="nav-menu-item">
+              <NavLink to="/orders" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+                Orders
+              </NavLink>
             </li>
           </ul>
           <button type="button" className="logout-desktop-btn" onClick={logout}>
@@ -77,33 +83,38 @@ const Header = () => {
       <div className="nav-menu-mobile">
         <ul className="nav-menu-list-mobile">
           <li className="nav-menu-item-mobile">
-            <Link to="/" className="nav-link">
+            <NavLink to="/" className={({ isActive }) => (isActive ? "nav-link mobile-active" : "nav-link")}>
               <img
                 src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-home-icon.png"
                 alt="nav home"
                 className="nav-bar-img"
               />
-            </Link>
+            </NavLink>
           </li>
 
           <li className="nav-menu-item-mobile">
-            <Link to="/products" className="nav-link">
+            <NavLink to="/products" className={({ isActive }) => (isActive ? "nav-link mobile-active" : "nav-link")}>
               <img
                 src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-products-icon.png"
                 alt="nav products"
                 className="nav-bar-img"
               />
-            </Link>
+            </NavLink>
           </li>
           <li className="nav-menu-item-mobile">
-            <Link to="/cart" className="nav-link">
+            <NavLink to="/cart" className={({ isActive }) => (isActive ? "nav-link mobile-active" : "nav-link")}>
               <img
                 src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-cart-icon.png"
                 alt="nav cart"
                 className="nav-bar-img"
               />
               {renderCartItemsCount()}
-            </Link>
+            </NavLink>
+          </li>
+          <li className="nav-menu-item-mobile">
+            <NavLink to="/orders" className={({ isActive }) => (isActive ? "nav-link mobile-active" : "nav-link")}>
+              <FaShoppingBag size={20} className='nav-order-icon'/>
+            </NavLink>
           </li>
         </ul>
       </div>

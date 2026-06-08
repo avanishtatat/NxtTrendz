@@ -1,0 +1,172 @@
+
+.order-success-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  padding-top: 10px;
+  padding-bottom: 50px;
+  width: 90%;
+  max-width: 1110px;
+}
+
+@media screen and (min-width: 768px) {
+  .order-success-container {
+    padding-top: 48px;
+  }
+}
+
+.animated-svg-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+}
+
+.order-success-heading {
+  color: #1e293b;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 1.2;
+  margin-top: 24px;
+  max-width: 400px;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+
+.order-success-message {
+  color: #475569;
+  font-family: 'Roboto';
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 400px;
+  text-align: center;
+}
+
+.order-details {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 24px;
+    width: 100%;
+    max-width: 500px;
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+.order-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 8px 0;
+}
+
+.order-detail-label {
+    color: #334155;
+    font-family: 'Roboto';
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.order-detail-value {
+    color: #475569;
+    font-family: 'Roboto';
+    font-size: 14px;
+}
+
+.bold-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.paid-badge {
+    background-color: #22c55e;
+    color: #ffffff;
+    font-family: 'Roboto';
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.processing-badge {
+    background-color: #fbbf24;
+    color: #ffffff;
+    font-family: 'Roboto';
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.delivery-truck-icon-container {
+    display: flex;
+    align-items: center;
+}
+
+.delivery-truck-icon {
+    color: #3b82f6;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.action-buttons-container {
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.action-button {
+    font-family: 'Roboto';
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.view-orders-button {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.continue-shopping-button {
+    background-color: #ffffff;
+    color: #3b82f6;
+    border: 2px solid #3b82f6;
+}
+
+.view-orders-button:hover {
+    background-color: #2563eb;
+}
+
+.continue-shopping-button:hover {
+    background-color: #e0f2fe;
+}
+
+@media screen and (max-width: 576px) {
+    .action-buttons-container {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .action-button {
+        width: 100%;
+        text-align: center;
+    }
+}

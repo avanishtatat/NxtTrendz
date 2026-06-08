@@ -12,6 +12,8 @@ import CartContext from './context/CartContext'
 
 import './App.css'
 import SignUp from './pages/Auth/SignUp'
+import OrderSuccess from './pages/Order/OrderSuccess'
+import Orders from './pages/Order/Orders'
 
 const App = () => (
   <Routes>
@@ -22,6 +24,8 @@ const App = () => (
       <Route path="/products" element={<Products />} />
       <Route path="/products/:id" element={<ProductItemDetails />} />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/order-success" element={<OrderSuccess />} />
+      <Route path="/orders" element={<Orders />} />
     </Route>
     <Route path="/not-found" element={<NotFound />} />
     <Route path="*" element={<Navigate to="/not-found" />} />

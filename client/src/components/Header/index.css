@@ -1,7 +1,12 @@
 .nav-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   border-bottom: 1px solid rgb(243, 243, 243);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 @media screen and (max-width: 767px) {
@@ -117,6 +122,11 @@
   color: #475569;
 }
 
+.active {
+  color: #0967d2;
+  font-weight: 600;
+}
+
 .nav-menu-item-mobile {
   margin: 0px;
   cursor: pointer;
@@ -156,8 +166,32 @@
   }
 }
 
+.nav-order-icon {
+  color: #616e7c; 
+  transition: color 0.2s ease;
+}
+
 .nav-bar-img {
   width: 24px;
+}
+
+.nav-link.mobile-active {
+  background-color: #bfdbfe; 
+  padding: 8px 16px;
+  border-radius: 20px;      
+  transition: all 0.2s ease;
+}
+
+.nav-link.mobile-active .nav-bar-img {
+  filter: invert(31%) sepia(85%) saturate(2135%) hue-rotate(204deg) brightness(93%) contrast(98%);
+}
+
+.nav-link.mobile-active .nav-order-icon {
+  color: #0967d2; 
+}
+
+.nav-link {
+  position: relative;
 }
 
 .cart-count-badge {
