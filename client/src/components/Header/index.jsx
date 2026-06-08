@@ -58,7 +58,7 @@ const Header = () => {
             </li>
 
             <li className="nav-menu-item">
-              <NavLink to="/products" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+              <NavLink to="/products" end className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
                 Products
               </NavLink>
             </li>
@@ -93,7 +93,7 @@ const Header = () => {
           </li>
 
           <li className="nav-menu-item-mobile">
-            <NavLink to="/products" className={({ isActive }) => (isActive ? "nav-link mobile-active" : "nav-link")}>
+            <NavLink to="/products" end className={({ isActive }) => (isActive ? "nav-link mobile-active" : "nav-link")}>
               <img
                 src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-products-icon.png"
                 alt="nav products"
