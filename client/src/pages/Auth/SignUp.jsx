@@ -7,6 +7,7 @@ import {useAuth} from '../../context/AuthContext'
 import {FiArrowRight, FiLock, FiMail, FiUser} from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import AuthInput from '../../components/AuthInput'
+import {usePrimePayment} from '../../hooks/usePrimePayment'
 
 const SignUp = () => {
   const {token, login: loginUser, user, updatePrimeStatus} = useAuth()
@@ -21,6 +22,7 @@ const SignUp = () => {
   //   console.log("Selected plan:", selectedPlan)
 
   const navigate = useNavigate()
+  const initiatePrimePayment = usePrimePayment({page: 'home'})
 
   const onChangeName = event => {
     setName(event.target.value)
@@ -45,80 +47,6 @@ const SignUp = () => {
     setErrorMsg(errMsg)
   }
 
-  const handlePrimePayment = async () => {
-    try {
-      const response = await axiosInstance.post('/payments/create-prime-order')
-      const {razorpayOrderId, amount, currency} = response.data
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY,
-        amount: amount.toString(),
-        currency,
-        order_id: razorpayOrderId,
-        name: 'NxtTrendz',
-        description: 'Prime Membership - 30-day access',
-        handler: async response => {
-          const {
-            razorpay_payment_id,
-            razorpay_order_id,
-            razorpay_signature,
-          } = response
-          try {
-            const verifyResponse = await axiosInstance.post(
-              '/payments/verify-prime-payment',
-              {
-                razorpayOrderId: razorpay_order_id,
-                razorpayPaymentId: razorpay_payment_id,
-                razorpaySignature: razorpay_signature,
-              },
-            )
-
-            const {token: newToken, user: updatedUser} = verifyResponse.data
-            updatePrimeStatus(
-              updatedUser.isPrime,
-              newToken,
-              updatedUser.primeExpiresAt,
-            )
-            toast.success(
-              'Payment successful! Your account has been upgraded to Prime.',
-            )
-            navigate('/')
-          } catch (error) {
-            console.error('Error verifying payment:', error)
-            toast.error(
-              'Payment verification failed. Please contact support if your payment was successful.',
-            )
-            navigate('/')
-          }
-        },
-        prefill: {
-          name: user?.name || '',
-          email: user?.email || '',
-        },
-        theme: {
-          color: '#0b69ff',
-        },
-      }
-      const rzp = new window.Razorpay(options)
-
-      rzp.on('payment.failed', function (response) {
-        toast.error('Payment failed. You can upgrade your plan later.')
-        navigate('/')
-      })
-
-      rzp.open()
-    } catch (error) {
-      console.error(
-        'Error initiating Razorpay payment:',
-        error.response?.data || error?.message,
-      )
-      toast.error(
-        'Failed to initiate payment. Please try again later or contact support.',
-      )
-      navigate('/')
-    }
-  }
-
   const submitForm = async event => {
     // console.log("Submitting login form with:", { email, password })
     event.preventDefault()
@@ -129,7 +57,7 @@ const SignUp = () => {
       onSubmitSuccess(response?.data?.user, response?.data?.token)
       if (selectedPlan === 'prime') {
         setProcessingPrime(true)
-        await handlePrimePayment()
+        await initiatePrimePayment()
       } else {
         toast.success(
           'Account created successfully! You can upgrade to Prime anytime.',

@@ -5,6 +5,9 @@ import ProductCard from '../ProductCard'
 
 import './index.css'
 import axiosInstance from '../../api/axios'
+import {usePrimePayment} from '../../hooks/usePrimePayment'
+import {useAuth} from '../../context/AuthContext'
+import {useNavigate} from 'react-router-dom'
 
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -88,11 +91,23 @@ class PrimeDealsSection extends Component {
   }
 
   renderPrimeDealsFailureView = () => (
-    <img
-      src="https://assets.ccbp.in/frontend/react-js/exclusive-deals-banner-img.png"
-      alt="register prime"
-      className="register-prime-img"
-    />
+    <div className="prime-failure-view">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/exclusive-deals-banner-img.png"
+        alt="register prime"
+        className="register-prime-img"
+        onClick={() => {
+          this.props.handleUpgradeToPrime()
+        }}
+      />
+      <div className="prime-cta-container">
+        <h3 className="prime-cta-heading">Unlock Prime Deals</h3>
+        <p className="prime-cta-message">
+          Upgrade to Prime for <span className="prime-price">₹499</span> and
+          enjoy exclusive deals, premium discounts, and special shopping offers.
+        </p>
+      </div>
+    </div>
   )
 
   renderLoadingView = () => (
@@ -116,4 +131,15 @@ class PrimeDealsSection extends Component {
   }
 }
 
-export default PrimeDealsSection
+const PrimeDealsSectionWrapper = () => {
+  const {user} = useAuth()
+  const initiatePrimePayment = usePrimePayment({page: 'products'})
+
+  const handleUpgradeToPrime = async () => {
+    await initiatePrimePayment()
+  }
+
+  return <PrimeDealsSection key={user?.isPrime ? 'prime' : 'free'} handleUpgradeToPrime={handleUpgradeToPrime} />
+}
+
+export default PrimeDealsSectionWrapper

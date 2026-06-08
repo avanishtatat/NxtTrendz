@@ -1,15 +1,15 @@
 import AllProductsSection from '../AllProductsSection'
-import PrimeDealsSection from '../PrimeDealsSection'
 
 import Header from '../Header'
 
 import './index.css'
+import PrimeDealsSectionWrapper from '../PrimeDealsSection'
 
 const Products = () => (
   <>
     <Header />
     <div className="product-sections">
-      <PrimeDealsSection />
+      <PrimeDealsSectionWrapper />
       <AllProductsSection />
     </div>
   </>

@@ -5,6 +5,7 @@ import './index.css'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useState } from 'react'
+import { loadRazorpayScript } from '../../utils/loadRazorpayScript'
 
 const CartSummary = () => {
   const {cartList, removeAllCartItems} = useCart()
@@ -25,6 +26,12 @@ const CartSummary = () => {
     try {
       const response = await axiosInstance.post('/payments/create-order')
       const {razorpayOrderId, amount, currency} = response.data
+
+      const scriptLoaded = await loadRazorpayScript()
+      if (!scriptLoaded || typeof window.Razorpay !== 'function') {
+        toast.error('Payment service is currently unavailable. Please refresh and try again.')
+        return
+      }
       
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY,
@@ -62,10 +69,6 @@ const CartSummary = () => {
         theme: {
           color: '#F37254',
         },
-      }
-      if (!window.Razorpay) {
-        toast.error('Payment service is currently unavailable. Please refresh and try again.')
-        return
       }
       const rzp = new window.Razorpay(options)
       rzp.on('payment.failed', function (response) {
