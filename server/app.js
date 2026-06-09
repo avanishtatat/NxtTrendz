@@ -3,14 +3,13 @@ dotenv.config(); // Load environment variables from .env file
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { pathToFileURL } from "url";
 import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/products.js";
-import cartRoutes from './routes/cart.js';
-import paymentRoutes from './routes/payments.js';
-import orderRoutes from './routes/orders.js';
+import cartRoutes from "./routes/cart.js";
+import paymentRoutes from "./routes/payments.js";
+import orderRoutes from "./routes/orders.js";
 
 const app = express();
 
@@ -33,19 +32,46 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "healthy", database: dbStatus });
 });
 
-// Routes 
+// Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/orders", orderRoutes);
 
+let server;
+const gracefulShutdown = async (signal, server) => {
+  console.log(`${signal} received, shutting down gracefully...`);
+
+  try {
+    if (server) {
+      await new Promise(resolve => server.close(resolve));
+    }
+
+    await mongoose.connection.close();
+    console.log("MongoDB connection closed.");
+
+    process.exit(0);
+  } catch (err) {
+    console.error("Shutdown error:", err);
+    process.exit(1);
+  }
+};
+
+const safeShutdown = (signal) => {
+  return gracefulShutdown(signal, server);
+}
+
+process.on("SIGTERM",async () => await safeShutdown("SIGTERM"));
+process.on("SIGINT", async () => await safeShutdown("SIGINT"));
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB(); // Connect to MongoDB
-    app.listen(PORT, () => {
+
+    server = app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
@@ -54,34 +80,6 @@ const startServer = async () => {
   }
 };
 
-const gracefulShutdown = async (signal) => {
-  console.log(`${signal} received, shutting down gracefully...`);
-  try {
-    await mongoose.connection.close(); // Close MongoDB connection
-    console.log("MongoDB connection closed");
-    process.exit(0); // Exit with success code
-  } catch (error) {
-    console.error("Error during shutdown:", error);
-    process.exit(1); // Exit with failure code
-  }
-};
-
-const isDirectRun = process.argv[1]
-  ? import.meta.url === pathToFileURL(process.argv[1]).href
-  : false;
-
-if (isDirectRun) {
-  startServer();
-  // Graceful shutdown handlers
-  process.on("SIGTERM", async () => {
-    await gracefulShutdown("SIGTERM");
-  });
-
-  process.on("SIGINT", async () => {
-    await gracefulShutdown("SIGINT");
-  });
-}
-
-
+startServer();
 
 export default app;
