@@ -47,12 +47,20 @@ export const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error during user registration:", process.env.NODE_ENV === "production" ?  error.message : error );
+    console.error(
+      "Error during user registration:",
+      process.env.NODE_ENV === "production" ? error.message : error,
+    );
     res.status(500).json({ error: "Internal server error." });
   }
 };
 
 export const loginUser = async (req, res) => {
+  console.log("========== LOGIN ==========");
+  console.log("Method:", req.method);
+  console.log("URL:", req.originalUrl);
+  console.log("Content-Type:", req.headers["content-type"]);
+  console.log("Body:", req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -85,7 +93,10 @@ export const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error during user login:", process.env.NODE_ENV === "production" ?  error.message : error );
+    console.error(
+      "Error during user login:",
+      process.env.NODE_ENV === "production" ? error.message : error,
+    );
     res.status(500).json({ error: "Internal server error." });
   }
 };
@@ -112,7 +123,10 @@ export const getProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching user profile:", process.env.NODE_ENV === "production" ?  error.message : error );
+    console.error(
+      "Error fetching user profile:",
+      process.env.NODE_ENV === "production" ? error.message : error,
+    );
     res.status(500).json({ error: "Internal server error." });
   }
 };
