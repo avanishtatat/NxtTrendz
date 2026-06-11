@@ -1,13 +1,10 @@
+<p align="center">
+  <img src="assets/banner.png" alt="NxtTrendz Banner" />
+</p>
+
 # NxtTrendz
 
-```text
- _   _  _   _  _______  _______ _______ _______ _______ _______
-| \ | || \ | ||__   __||__   __|__   __|__   __|__   __|__   __|
-|  \| ||  \| |   | |      | |     | |     | |     | |     | |
-| . ` || . ` |   | |      | |     | |     | |     | |     | |
-| |\  || |\  |   | |      | |     | |     | |     | |     | |
-|_| \_||_| \_|   |_|      |_|     |_|     |_|     |_|     |_|
-```
+Full Stack E-Commerce Application
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -16,11 +13,12 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
 [![JWT](https://img.shields.io/badge/JWT-Auth-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
 [![Razorpay](https://img.shields.io/badge/Razorpay-Payments-0C2451?logo=razorpay&logoColor=white)](https://razorpay.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?logo=vercel&logoColor=white)](https://vercel.com/)
-[![Render](https://img.shields.io/badge/Render-Deploy-46E3B7?logo=render&logoColor=white)](https://render.com/)
+[![AWS EC2](https://img.shields.io/badge/AWS-EC2-FF9900?logo=amazon-ec2&logoColor=white)](https://aws.amazon.com/ec2/)
+[![Nginx](https://img.shields.io/badge/Nginx-Reverse%20Proxy-009639?logo=nginx&logoColor=white)](https://nginx.org/)
+[![PM2](https://img.shields.io/badge/PM2-Process%20Manager-2B037A?logo=pm2&logoColor=white)](https://pm2.keymetrics.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Live Demo:** https://avanishnxttrend.ccbp.tech _(legacy frontend, pending full-stack redeploy)_
+**Live Demo:** http://13.207.106.94
 
 **GitHub:** https://github.com/avanishtatat/NxtTrendz
 
@@ -44,28 +42,94 @@ NxtTrendz is a full-stack e-commerce application that evolved from a frontend-on
 - 📦 Order history and order detail views backed by MongoDB.
 - ⚡ Shared `usePrimePayment` hook and lazy Razorpay SDK loading for reusable payment flows.
 - 🔁 Token refresh on app load through the auth profile endpoint so Prime status stays current.
+- 🚀 Production deployment on AWS EC2 Ubuntu with frontend and backend served from one instance.
+- 🔀 Nginx reverse proxy routes frontend and API traffic through the same Elastic IP.
+- ⚙️ PM2-based backend process management for reliable runtime and restart handling.
+- ♻️ Automatic backend restart after server reboot via PM2 startup configuration.
 
 ## Tech Stack
 
 | Layer | Tools |
 | --- | --- |
-| Frontend | React 18, Vite, React Router DOM v6, Axios, React Hot Toast, react-icons, react-loader-spinner, react-modal, Context API |
+| Frontend | React 18, Vite, React Router DOM v6, Axios, React Hot Toast, react-icons, react-loader-spinner, Context API |
 | Backend | Node.js, Express.js, MongoDB Atlas, Mongoose, JWT, Bcrypt, Razorpay Node SDK, Axios proxy to NxtWave APIs |
 | Styling | Plain CSS / component-scoped CSS |
 | Payments | Razorpay checkout.js (loaded on demand) |
 | Modules | ES Modules (`import` / `export`) |
+| Deployment | AWS EC2, Ubuntu, Nginx, PM2, Elastic IP |
+
+## Deployment
+
+The frontend and backend are deployed on a single AWS EC2 Ubuntu instance and are accessible through one Elastic IP.
+
+**Live URL:** http://13.207.106.94
+
+### Production Deployment Details
+
+- AWS EC2 Ubuntu Server
+- Elastic IP attached to the EC2 instance
+- Nginx configured as reverse proxy
+- React production build deployed in `/var/www/nxttrendz`
+- Express backend running on port `5000`
+- PM2 used for process management
+- PM2 startup configured for automatic restart after server reboot
+- MongoDB Atlas used as the cloud database
+- Frontend and backend accessible through the same Elastic IP
+- Nginx routes frontend requests to static React files and `/api/*` requests to Express backend
+
+## Architecture
+
+```text
+Internet
+	↓
+Elastic IP
+	↓
+Nginx
+	├── Serves React production build from /var/www/nxttrendz
+	└── Proxies /api/* requests to Express backend
+	↓
+Node.js + Express.js
+	↓
+PM2 Process Manager
+	↓
+MongoDB Atlas
+```
 
 ## Screenshots
 
-Replace these placeholders with real screenshots from your deployment.
+### Login Page
+![Login Page](screenshots/login.png)
 
-| Screen | Placeholder |
-| --- | --- |
-| Home | `./docs/screenshots/home.png` |
-| Products | `./docs/screenshots/products.png` |
-| Product Details | `./docs/screenshots/product-details.png` |
-| Cart | `./docs/screenshots/cart.png` |
-| Prime Upgrade | `./docs/screenshots/prime-upgrade.png` |
+### Home Page
+![Home Page](screenshots/home.png)
+
+### Products Page
+![Products Page](screenshots/products.png)
+
+### Product Details Page
+![Product Details Page](screenshots/product-details.png)
+
+### Cart Page
+![Cart Page](screenshots/cart.png)
+
+### Orders Page
+![Orders Page](screenshots/orders.png)
+
+## Demo Video
+
+* Full Project Walkthrough (Coming Soon)
+* YouTube Demo Link: [Add Link Here]
+
+This video will demonstrate:
+
+* Registration
+* Login
+* Product Browsing
+* Prime Membership Upgrade
+* Cart Management
+* Checkout Flow
+* Orders History
+* AWS Deployment
 
 ## Getting Started
 
@@ -90,7 +154,13 @@ cd server
 npm install
 ```
 
-Create `server/.env` using the values below, then start the API:
+Copy `server/.env.example` to `server/.env`, fill in the required values, and do not commit the actual `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Start the API:
 
 ```bash
 npm run dev
@@ -103,13 +173,92 @@ cd ../client
 npm install
 ```
 
-Create `client/.env`, then run the frontend:
+Copy `client/.env.example` to `client/.env`, fill in the required values, and do not commit the actual `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Run the frontend:
 
 ```bash
 npm run dev
 ```
 
+## Production Deployment (AWS EC2 Ubuntu)
+
+### 1. Build the React app
+
+```bash
+cd client
+npm install
+npm run build
+```
+
+### 2. Copy the build output to Nginx web root
+
+```bash
+sudo mkdir -p /var/www/nxttrendz
+sudo cp -r dist/* /var/www/nxttrendz/
+```
+
+### 3. Configure Nginx for static frontend + API proxy
+
+Create an Nginx server block that serves `/var/www/nxttrendz` for frontend routes and forwards `/api/*` to `http://localhost:5000`.
+
+```nginx
+server {
+	listen 80;
+	server_name 13.207.106.94;
+
+	root /var/www/nxttrendz;
+	index index.html;
+
+	location /api/ {
+		proxy_pass http://localhost:5000;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection 'upgrade';
+		proxy_set_header Host $host;
+		proxy_cache_bypass $http_upgrade;
+	}
+
+	location / {
+		try_files $uri /index.html;
+	}
+}
+```
+
+### 4. Start backend with PM2
+
+```bash
+cd server
+npm install
+pm2 start app.js --name nxttrendz-api
+pm2 save
+```
+
+### 5. Configure PM2 startup on reboot
+
+```bash
+pm2 startup
+```
+
+Run the command printed by PM2 (with `sudo`) and then run:
+
+```bash
+pm2 save
+```
+
+### 6. Attach and use Elastic IP
+
+- Allocate an Elastic IP in AWS.
+- Attach it to the EC2 instance.
+- Update Nginx `server_name` and client-facing URLs if needed.
+
 ## Environment Variables
+
+The project includes `client/.env.example` and `server/.env.example`. Use them as templates, copy them to `.env`, fill in the required values, and keep real secrets out of version control.
 
 ### `server/.env`
 
@@ -124,14 +273,46 @@ npm run dev
 | `NXTWAVE_PRIME_PASSWORD` | Yes | NxtWave Prime API password |
 | `NXTWAVE_FREE_USERNAME` | Yes | NxtWave Free API username |
 | `NXTWAVE_FREE_PASSWORD` | Yes | NxtWave Free API password |
-| `CLIENT_URL` | Yes | Frontend origin for CORS, e.g. `http://localhost:3000` |
+| `CLIENT_URL` | Yes | Frontend origin for CORS, e.g. `http://localhost:3000` (local) or `http://13.207.106.94` (EC2) |
+
+**`server/.env.example`**
+
+```env
+PORT=5000
+CLIENT_URL=http://localhost:3000
+MONGODB_URI=
+JWT_SECRET=
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+NXTWAVE_PRIME_USERNAME=
+NXTWAVE_PRIME_PASSWORD=
+NXTWAVE_FREE_USERNAME=
+NXTWAVE_FREE_PASSWORD=
+```
 
 ### `client/.env`
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `VITE_API_URL` | Yes | Backend API base URL, e.g. `http://localhost:5000/api/v1` |
+| `VITE_API_URL` | Yes | Backend API base URL, e.g. `http://localhost:5000/api/v1` (local) or `http://13.207.106.94/api/v1` (EC2 via Nginx) |
 | `VITE_RAZORPAY_KEY` | Yes | Razorpay key passed to the checkout widget |
+
+**`client/.env.example`**
+
+```env
+VITE_API_URL=http://localhost:5000/api/v1
+VITE_RAZORPAY_KEY=
+```
+
+### AWS EC2 Deployment Notes
+
+- Keep production secrets only on the server in `server/.env`.
+- Build the client with production `VITE_API_URL` before copying files to `/var/www/nxttrendz`.
+- Restart the backend process after server-side env updates:
+
+```bash
+pm2 restart nxttrendz-api
+```
 
 ## API Endpoints
 
@@ -199,14 +380,32 @@ NxtTrendz/
 │       │   └── Cart/
 │       └── App.jsx
 ├── server/
-│   ├── app.js
 │   ├── config/
 │   │   └── db.js
 │   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── cartController.js
+│   │   ├── orderController.js
+│   │   ├── paymentController.js
+│   │   └── productController.js
 │   ├── middleware/
+│   │   └── authMiddleware.js
 │   ├── models/
+│   │   ├── User.js
+│   │   ├── Cart.js
+│   │   └── Order.js
 │   ├── routes/
-│   └── utils/
+│   │   ├── auth.js
+│   │   ├── cart.js
+│   │   ├── orders.js
+│   │   ├── payments.js
+│   │   └── products.js
+│   ├── utils/
+│   │   ├── generateToken.js
+│   │   ├── checkPrimeStatus.js
+│   │   └── nxtWaveProxy.js
+│   ├── app.js
+│   └── package.json
 └── README.md
 ```
 
@@ -249,6 +448,10 @@ These credentials are useful for exploring the Prime and Free flows in the curre
 - Product reviews and ratings
 - Wishlist feature
 - Address management
+- HTTPS/SSL certificate using Let's Encrypt
+- Domain name configuration
+- Auto-scaling with Load Balancer
+- CI/CD pipeline with GitHub Actions
 
 ## Author
 
@@ -258,6 +461,8 @@ These credentials are useful for exploring the Prime and Free flows in the curre
 - Open to work
 - LinkedIn: https://www.linkedin.com/in/avanishtiwari18
 - GitHub: https://github.com/avanishtatat
+
+Deployed on AWS EC2 Ubuntu with Nginx reverse proxy and PM2 process management - demonstrating DevOps capabilities beyond typical frontend development.
 
 ## License
 
