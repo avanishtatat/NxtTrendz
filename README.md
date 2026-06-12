@@ -80,19 +80,38 @@ The frontend and backend are deployed on a single AWS EC2 Ubuntu instance and ar
 ## Architecture
 
 ```text
-Internet
-	↓
-Elastic IP
-	↓
-Nginx
-	├── Serves React production build from /var/www/nxttrendz
-	└── Proxies /api/* requests to Express backend
-	↓
-Node.js + Express.js
-	↓
-PM2 Process Manager
-	↓
-MongoDB Atlas
+              INTERNET
+                 │
+                 ▼
+        ┌─────────────────┐
+        │   Elastic IP    │
+        │  13.207.106.94  │
+        └────────┬────────┘
+                 │
+                 ▼
+        ┌─────────────────┐
+        │      Nginx      │
+        │  Reverse Proxy  │
+        └────────┬────────┘
+                 │
+         ┌───────┴────────┐
+         │                │
+         ▼                ▼
+┌──────────────┐  ┌──────────────────┐
+│ React Build  │  │ Express Backend  │
+│ /var/www/    │  │ localhost:5000   │
+│ nxttrendz    │  │ (PM2 managed)    │
+└──────────────┘  └────────┬─────────┘
+Static files               │
+(HTML/CSS/JS)              ▼
+                   ┌──────────────────┐
+                   │  MongoDB Atlas   │
+                   │  (Cloud DB)      │
+                   └──────────────────┘
+
+Nginx routes:
+/* → React static files
+/api/* → Express backend
 ```
 
 ## Screenshots
