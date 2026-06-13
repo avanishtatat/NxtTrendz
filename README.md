@@ -18,9 +18,9 @@ Full Stack E-Commerce Application
 [![PM2](https://img.shields.io/badge/PM2-Process%20Manager-2B037A?logo=pm2&logoColor=white)](https://pm2.keymetrics.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Live Demo:** http://13.207.106.94
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](http://13.207.106.94)
 
-**GitHub:** https://github.com/avanishtatat/NxtTrendz
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/avanishtatat/NxtTrendz)
 
 **Built by:** Avanish Tiwari
 
@@ -134,21 +134,12 @@ Nginx routes:
 ### Orders Page
 ![Orders Page](screenshots/orders.png)
 
-## Demo Video
+## 📺 Demo Video
 
-* Full Project Walkthrough (Coming Soon)
-* YouTube Demo Link: [Add Link Here]
+[![Watch Demo](https://img.shields.io/badge/YouTube-Demo%20Video-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/AL5l0mAiP3Y)
 
-This video will demonstrate:
-
-* Registration
-* Login
-* Product Browsing
-* Prime Membership Upgrade
-* Cart Management
-* Checkout Flow
-* Orders History
-* AWS Deployment
+> Full walkthrough of features including Razorpay payment, 
+> prime subscription, cart management, and AWS EC2 deployment.
 
 ## Getting Started
 
